@@ -1,0 +1,119 @@
+.buscar-doacao {
+    display: flex;
+}
+
+.buscar-doacao main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+.container-select-busca {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: calc(100vw - 250px);
+    height: 40px;
+    margin-top: 20px;
+}
+
+.select-busca {
+    display: flex;
+    align-items: center;
+}
+
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #3c3c3c;
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding-left: 30px;
+}
+
+.table th {
+    font-weight: bold;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.btn-doar {
+    background-color: #A52A2A;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.doacao-confirmada{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    margin: auto;
+    margin-top: 50px;
+    background-color: var(--light-gray);
+    border: 1px solid var(--dark-brown);
+    backdrop-filter: blur(3px);
+    border-radius: 4px;
+}
+
+.doacao-confirmada h2{
+    color: #3c3c3c;
+}
+
+
+.mensagem-doacao-efetuada, .doacao-nao-encontrada{
+    width: 50%;
+    height: 100px;
+    margin: auto;
+    margin-top: 50px;
+    background-color: var(--light-gray);
+    border: 1px solid var(--dark-brown);
+    backdrop-filter: blur(3px);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3c3c3c;
+}
+
+.mensagem-doacao-efetuada p, .doacao-nao-encontrada p{
+    font-size: 25px;
+    font-weight: 600;
+    color: #3c3c3c;
+}
+
+.doacao-confirmada p{
+    color: #3c3c3c;
+    font-weight: 600;
+}
+
+.buscar-doacao .doacao-confirmada table {
+    border-collapse: collapse;
+    margin: 20px;
+    color: #3c3c3c;
+}
+
+.buscar-doacao .doacao-confirmada th{
+    background-color: #3c3c3c3c;
+}
+
+.buscar-doacao .doacao-confirmada th,
+.buscar-doacao .doacao-confirmada td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+
