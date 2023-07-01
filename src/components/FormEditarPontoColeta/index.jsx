@@ -3,22 +3,18 @@ import './style.css';
 import { buscarEnderecoPorCep } from "../../utils/helpers";
 import axiosWithAuth from "../../utils/axiosWithAuth";
 
-const FormEditarUsuario = ({ usuario, mostrarFormulario }) => {
+const FormEditarPontoColeta = ({ pontoColeta, mostrarFormulario }) => {
 
-
+//Parei aqui
   const [formData, setFormData] = useState({
-    id: usuario.id || "",
-    nome: usuario.nome || "",
-    tipo: usuario.tipo || "",
-    login: usuario.login || "",
-    senha: usuario.senha || "",
-    cep: usuario.cep || "",
-    rua: usuario.rua || "",
-    numero: usuario.numero || "",
-    complemento: usuario.complemento || "",
-    bairro: usuario.bairro || "",
-    cidade: usuario.cidade || "",
-    estado: usuario.estado || "",
+    nomePonto: pontoColeta.nomePonto || "",
+    cep: pontoColeta.cep.replace('-', '') || "",
+    logradouro: pontoColeta.logradouro || "",
+    numero: pontoColeta.numero || "",
+    complemento: pontoColeta.complemento || "",
+    bairro: pontoColeta.bairro || "",
+    cidade: pontoColeta.cidade || "",
+    estado: pontoColeta.estado || "",
   });
 
   const handleChange = (e) => {
@@ -33,15 +29,30 @@ const FormEditarUsuario = ({ usuario, mostrarFormulario }) => {
     e.preventDefault();
     try {
       const response = await axiosWithAuth().put(
-        "https://localhost:7243/api/usuarios/atualizar",
-        formData
+        `http://localhost:5059/api/collectpoint/${pontoColeta.id}/update`,
+        formData,
+        console.log(formData)
       );
+      
       
       mostrarFormulario();
       window.location.reload();
-    } catch (error) {
-      console.error("Erro ao editar o usuário", error);
-    }
+      } catch (error) {
+        if (error.response) {
+          const { status, data } = error.response;
+          if (status === 400) {
+            const errorMessage = error.response.data || "Erro ao editar o ponto de coleta";
+            alert(errorMessage);
+          } else if (status === 409) {
+            const errorMessage = error.response.data || "Erro ao editar o ponto de coleta";;
+            alert(errorMessage);
+          } else {
+            console.error("Erro ao editar o ponto de coleta", error);
+          }
+        } else {
+          console.error("Erro ao editar o ponto de coleta", error);
+        }
+      }
   };
 
   const buscarEndereco = async () => {
@@ -68,60 +79,24 @@ const FormEditarUsuario = ({ usuario, mostrarFormulario }) => {
                       placeholder="Nome"
                       type="text"
                       id="nome"
-                      name="nome"
-                      value={formData.nome}
+                      name="nomePonto"
+                      value={formData.nomePonto}
                       onChange={handleChange}
                       required
                     />
-                  </div>
-                  <div>
-                    <select
-                      id="tipo"
-                      name="tipo"
-                      value={formData.tipo}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="">Selecione o tipo</option>
-                      <option value="Admin">Admin</option>
-                      <option value="Normal">Normal</option>
-                    </select>
                   </div>
                 </div>
 
-                <div className="form-row">
-                  <div>
-                    <input
-                      placeholder="Login"
-                      type="text"
-                      id="login"
-                      name="login"
-                      value={formData.login}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <input
-                      placeholder="Senha"
-                      type="password"
-                      id="senha"
-                      name="senha"
-                      value={formData.senha}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
+                
 
                 <div className="form-row">
                   <div>
                     <input
                       placeholder="CEP"
-                      type="text"
+                      type="number"
                       id="cep"
                       name="cep"
-                      value={formData.cep}
+                      value={formData.cep.replace('-', '')}
                       onChange={handleChange}
                       onBlur={buscarEndereco}
                       required
@@ -132,8 +107,8 @@ const FormEditarUsuario = ({ usuario, mostrarFormulario }) => {
                       placeholder="Rua"
                       type="text"
                       id="rua"
-                      name="rua"
-                      value={formData.rua}
+                      name="logradouro"
+                      value={formData.logradouro}
                       onChange={handleChange}
                       required
                     />
@@ -217,4 +192,4 @@ const FormEditarUsuario = ({ usuario, mostrarFormulario }) => {
   );
 };
 
-export default FormEditarUsuario;
+export default FormEditarPontoColeta;

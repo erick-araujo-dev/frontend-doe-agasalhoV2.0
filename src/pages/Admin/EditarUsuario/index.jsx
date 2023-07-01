@@ -3,15 +3,15 @@ import SidebarAdmin from "../../../components/SidebarAdmin";
 import { Pencil, Trash } from "phosphor-react";
 import axios from "axios";
 import "./style.css";
-import FormEditarUsuario from "../../../components/FormEditarUsuario";
+import FormEditarPontoColeta from "../../../components/FormEditarPontoColeta";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 
 const EditarUsuario = () => {
-  const [usuarios, setUsuarios] = useState([]);
+  const [pontosColeta, setPontosColeta] = useState([]);
   const [exibirFormulario, setExibirFormulario] = useState(false);
-  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+  const [pontoColetaSelecionado, setPontoColetaSelecionado] = useState(null);
   const [exibirConfirmacao, setExibirConfirmacao] = useState(false);
   const navigate = useNavigate();
 
@@ -27,36 +27,36 @@ const EditarUsuario = () => {
         }
     }, []);
 
-  const buscarUsuarios = async () => {
+  const buscarpontosColeta = async () => {
     try {
-      const response = await axiosWithAuth().get("https://localhost:7243/api/usuarios");
-      setUsuarios(response.data.$values);
+      const response = await axiosWithAuth().get("http://localhost:5059/api/collectpoint/");
+      setPontosColeta(response.data.$values);
     } catch (error) {
       console.error("Erro ao obter usuários:", error);
     }
   };
 
   useEffect(() => {
-    buscarUsuarios();
+    buscarpontosColeta();
   }, []);
 
-  const editarUsuario = (id) => {
-    const usuario = usuarios.find((usuario) => usuario.id === id);
-    setUsuarioSelecionado(usuario);
+  const editarPontosColeta = (id) => {
+    const pontoColeta = pontosColeta.find((pontoColeta) => pontoColeta.id === id);
+    setPontoColetaSelecionado(pontoColeta);
     setExibirFormulario(true);
   };
 
   const excluirUsuario = (id) => {
-    const usuario = usuarios.find((usuario) => usuario.id === id);
-    setUsuarioSelecionado(usuario);
+    const pontoColeta = pontosColeta.find((pontoColeta) => pontoColeta.id === id);
+    setPontoColetaSelecionado(pontoColeta);
     setExibirConfirmacao(true);
   };
 
   const confirmarExclusao = async () => {
     try {
-      await axiosWithAuth().delete(`https://localhost:7243/api/usuarios/excluir/${usuarioSelecionado.id}`);
+      await axiosWithAuth().delete(`https://localhost:7243/api/pontosColeta/excluir/${pontoColetaSelecionado.id}`);
       setExibirConfirmacao(false);
-      await buscarUsuarios();
+      await buscarpontosColeta();
     } catch (error) {
       console.error("Erro ao excluir usuário:", error);
     }
@@ -74,8 +74,8 @@ const EditarUsuario = () => {
 
         <div className="section-box">
           {exibirFormulario ? (
-            <FormEditarUsuario
-              usuario={usuarioSelecionado}
+            <FormEditarPontoColeta
+              pontoColeta={pontoColetaSelecionado}
               mostrarFormulario={() => setExibirFormulario(false)}
             />
           ) : (
@@ -87,7 +87,7 @@ const EditarUsuario = () => {
                 <div className="doacao-confirmada">
                   <h2>CONFIRMAR EXCLUSÃO!</h2>
                   <p>Você está prestes a excluir o usuário:<br/>
-                    <strong>{usuarioSelecionado.nome}</strong> <br/>
+                    <strong>{pontoColetaSelecionado.nomePonto}</strong> <br/>
                     Após realizar a exclusão todo o registro de estoque do usuário excluído será perdido.<br/>
                     Esta ação é irreversível, certifique-se de que esteja certo disso.</p>
                   <div className="botoes-confirmacao">
@@ -102,27 +102,20 @@ const EditarUsuario = () => {
                       <thead>
                         <tr>
                           <th>Unidade</th>
-                          <th>Região</th>
-                          <th>Login</th>
-                          <th>Tipo Perfil</th>
+                          <th>Usuarios Cadastrados</th>
+                          <th>Doações em estoque</th>
                           <th>Editar</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {usuarios.map((usuario) => (
-                          <tr key={usuario.id}>
-                            <td>{usuario.nome}</td>
-                            <td>{usuario.bairro}</td>
-                            <td>{usuario.login}</td>
-                            <td>{usuario.tipo}</td>
+                        {pontosColeta.map((pontoColeta) => (
+                          <tr key={pontoColeta.id}>
+                            <td>{pontoColeta.nomePonto}</td>
+                            <td>{pontoColeta.quantidadeUsuarios}</td>
+                            <td>{pontoColeta.quantidadeProdutos}</td>
                             <td>
-                              <Pencil className="icon-edit-delete" onClick={() => editarUsuario(usuario.id)} />
-                              {usuario.tipo !== "admin" && (
-                                <Trash
-                                  className="icon-edit-delete"
-                                  onClick={() => excluirUsuario(usuario.id)}
-                                />
-                              )}
+                              <Pencil className="icon-edit-delete" onClick={() => editarPontosColeta(pontoColeta.id)} />
+                              <Trash className="icon-edit-delete" onClick={() => excluirUsuario(pontoColeta.id)}/>
                             </td>
                           </tr>
                         ))}

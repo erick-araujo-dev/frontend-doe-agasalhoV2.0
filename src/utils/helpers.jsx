@@ -39,20 +39,24 @@ export const handleTipoChange = (event, setTamanhos) => {
 
 export const buscarEnderecoPorCep = async (cep, setDados) => {
   try {
-    const response = await axios.get(
-      `https://viacep.com.br/ws/${cep}/json/`
-    );
+    const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
     const data = response.data;
+
+    if (data.erro) {
+      throw new Error("CEP inválido");
+    }
+
     setDados((prevDados) => ({
       ...prevDados,
-      rua: data.logradouro,
-      bairro: data.bairro,
-      cidade: data.localidade,
-      estado: data.uf,
+      logradouro: data.logradouro || "",
+      bairro: data.bairro || "",
+      cidade: data.localidade || "",
+      estado: data.uf || "",
       cep: cep
     }));
   } catch (error) {
     console.error("Erro ao buscar o CEP", error);
+    alert("CEP inválido. Por favor, digite um CEP válido.");
   }
 };
 

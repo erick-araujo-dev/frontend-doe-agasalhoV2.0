@@ -33,8 +33,8 @@
 }
 
 .mensagem-erro{
-    font-size: 14px;
-    color: red;
+    font-size: 16px;
+    color: rgb(214, 29, 29);
     margin: 10px 0;
 }
 
@@ -56,7 +56,7 @@
 }
 
 .password-input.error::placeholder {
-    color: red;
+    color: rgb(214, 29, 29);
 }
 
 .login-container button{

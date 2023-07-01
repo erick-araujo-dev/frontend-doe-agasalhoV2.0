@@ -65,13 +65,17 @@
     text-align: center;
     border-bottom: 1px solid #ddd;
     padding-left: 30px;
+    text-transform: uppercase; 
+
 }
 
 .table-editar-usuario th {
     font-weight: bold;
-    text-transform: uppercase;
 }
 
+.table-editar-usuario td{
+    font-size: 14px;
+}
 .icon-edit-delete{
     font-size: 25px;
     cursor: pointer;

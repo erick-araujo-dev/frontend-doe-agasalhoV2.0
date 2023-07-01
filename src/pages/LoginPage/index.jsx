@@ -6,38 +6,52 @@ import axios from "axios";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [email, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "https://localhost:7243/api/login/signin",
+        "http://localhost:5059/api/login/signin",
         {
-          login: username,
+          email: email,
           senha: password,
         }
       );
-  
+
       const token = response.data.token;
       const usuarioTipo = response.data.usuario.tipo;
       const usuarioId = response.data.usuario.id;
       const usuarioNome = response.data.usuario.nome;
-  
+
       localStorage.setItem("token", token);
       localStorage.setItem("usuarioTipo", usuarioTipo);
       localStorage.setItem("usuarioId", usuarioId);
-      localStorage.setItem("usuarioNome", usuarioNome);    
+      localStorage.setItem("usuarioNome", usuarioNome);
       setErrorMessage("");
-   
+
       if (usuarioTipo === "normal") {
         navigate("/home");
       } else if (usuarioTipo === "admin") {
         navigate("/homeadmin");
       }
     } catch (error) {
-      setErrorMessage(error.response.data.message);
+      if (error.response) {
+        if (error.response.status === 404) {
+          // Usuário não encontrado
+          setErrorMessage(error.response.data);
+        } else if (error.response.status === 400) {
+          setErrorMessage(error.response.data);
+        } else {
+          setErrorMessage("Erro no servidor.");
+        }
+      } else if (error.request) {
+        // Erro na solicitação (sem resposta do servidor)
+        setErrorMessage("Erro na solicitação.");
+      } else {
+        setErrorMessage("Erro desconhecido.");
+      }
       setUsername("");
       setPassword("");
     }
@@ -59,7 +73,7 @@ function LoginPage() {
               <input
                 placeholder="Digite o usuário"
                 type="text"
-                value={username}
+                value={email}
                 className={getInputClassName()}
                 onChange={(e) => setUsername(e.target.value)}
               />
