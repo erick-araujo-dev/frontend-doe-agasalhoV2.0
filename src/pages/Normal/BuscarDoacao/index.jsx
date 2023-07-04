@@ -15,17 +15,17 @@ const BuscarDoacao = () => {
   const [doacaoNaoEncontrada, setDoacaoNaoEncontrada] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const usuarioId = localStorage.getItem("usuarioId");
-    const userType = localStorage.getItem("usuarioTipo");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const usuarioId = localStorage.getItem("usuarioId");
+  //   const userType = localStorage.getItem("usuarioTipo");
 
-    if (!token || !usuarioId) {
-      navigate("/login");
-    } else if (userType !== "normal") {
-      navigate("/unauthorized"); 
-    }
-  }, []);
+  //   if (!token || !usuarioId) {
+  //     navigate("/login");
+  //   } else if (userType !== "normal") {
+  //     navigate("/unauthorized"); 
+  //   }
+  // }, []);
   
   const handleBuscar = async () => {
     setDoacaoEfetuada(false);
@@ -142,6 +142,15 @@ const BuscarDoacao = () => {
             </select>
           </div>
           <div className="select-busca">
+            <label htmlFor="caracteristica">Estilo:</label>
+            <select id="caracteristica">
+            <option value="">Selecionar</option>
+            <option value="Jeans">Jeans</option>
+            <option value="Xadrez">Xadrez</option>
+              
+            </select>
+          </div>
+          <div className="select-busca">
             <label htmlFor="tamanho">Tamanho:</label>
             <select id="tamanho">
               <option value="">Selecionar</option>
@@ -183,6 +192,7 @@ const BuscarDoacao = () => {
                 <thead>
                   <tr>
                     <th>Tipo</th>
+                    <th>Estilo</th>
                     <th>Tamanho</th>
                     <th>Gênero</th>
                     <th>Estoque</th>
@@ -193,6 +203,7 @@ const BuscarDoacao = () => {
                   {resultados.map((item) => (
                     <tr key={item.$id}>
                       <td>{item.tipo}</td>
+                      <td>{item.caracteristica}</td>
                       <td>{item.tamanho}</td>
                       <td>
                         {item.genero === "M"
@@ -217,35 +228,44 @@ const BuscarDoacao = () => {
             )}
           </div>
           {doacaoConfirmada && itemSelecionado && (
-            <div className="doacao-confirmada">
-              <h2>CONFIRMAR DOAÇÃO</h2>
-              <p>Você está prestes a doar o seguinte item:</p>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Tipo</th>
-                    <th>Tamanho</th>
-                    <th>Gênero</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{itemSelecionado.tipo}</td>
-                    <td>{itemSelecionado.tamanho}</td>
-                    <td>{itemSelecionado.genero}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div className="botoes-confirmacao">
-                <button onClick={handleCancelarDoacao}>Cancelar</button>
-                <button onClick={handleConfirmarDoacao}>Confirmar</button>
+            <div className="overlay">
+              <div className="doacao-confirmada">
+                <h2>CONFIRMAR DOAÇÃO</h2>
+                <p>Você está prestes a doar o seguinte item:</p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tipo</th>
+                      <th>Tamanho</th>
+                      <th>Gênero</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{itemSelecionado.tipo}</td>
+                      <td>{itemSelecionado.tamanho}</td>
+                      <td>{itemSelecionado.genero}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="botoes-confirmacao">
+                  <button onClick={handleCancelarDoacao}>Cancelar</button>
+                  <button onClick={handleConfirmarDoacao}>Confirmar</button>
+                </div>
               </div>
             </div>
           )}
           {doacaoEfetuada && (
-            <div className="mensagem-doacao-efetuada">
-              <p>DOAÇÃO EFETUADA COM SUCESSO!</p>
+            <div className="overlay" onClick={() => setCadastroEfetuado(false)}>
+              <div className="mensagem-doacao-efetuada">
+                <p>DOAÇÃO EFETUADA COM SUCESSO!</p>
+                <span
+                  className="fechar"
+                  onClick={() => setCadastroEfetuado(false)}
+                >
+                  x
+                </span>
+              </div>
             </div>
           )}
         </div>

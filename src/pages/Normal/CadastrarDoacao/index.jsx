@@ -14,17 +14,17 @@ const CadastrarDoacao = () => {
     const [cadastroEfetuado, setCadastroEfetuado] = useState(false);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const usuarioId = localStorage.getItem("usuarioId");
-        const userType = localStorage.getItem("usuarioTipo");
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     const usuarioId = localStorage.getItem("usuarioId");
+    //     const userType = localStorage.getItem("usuarioTipo");
 
-        if (!token || !usuarioId) {
-            navigate("/login");
-        } else if (userType !== "normal") {
-            navigate("/unauthorized");
-        }
-    }, []);
+    //     if (!token || !usuarioId) {
+    //         navigate("/login");
+    //     } else if (userType !== "normal") {
+    //         navigate("/unauthorized");
+    //     }
+    // }, []);
 
     const handleCadastrar = async () => {
         const usuarioId = localStorage.getItem("usuarioId");

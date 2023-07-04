@@ -43,7 +43,7 @@ export const buscarEnderecoPorCep = async (cep, setDados) => {
     const data = response.data;
 
     if (data.erro) {
-      throw new Error("CEP inválido");
+      return;
     }
 
     setDados((prevDados) => ({
@@ -56,7 +56,6 @@ export const buscarEnderecoPorCep = async (cep, setDados) => {
     }));
   } catch (error) {
     console.error("Erro ao buscar o CEP", error);
-    alert("CEP inválido. Por favor, digite um CEP válido.");
   }
 };
 

@@ -7,17 +7,17 @@ const HomePageUser = () => {
     const usuarioNome = localStorage.getItem("usuarioNome")
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const usuarioId = localStorage.getItem("usuarioId");
-        const userType = localStorage.getItem("usuarioTipo");
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     const usuarioId = localStorage.getItem("usuarioId");
+    //     const userType = localStorage.getItem("usuarioTipo");
 
-        if (!token || !usuarioId) {
-            navigate("/login");
-        } else if (userType !== "normal") {
-            navigate("/unauthorized");
-        }
-    }, []);
+    //     if (!token || !usuarioId) {
+    //         navigate("/login");
+    //     } else if (userType !== "normal") {
+    //         navigate("/unauthorized");
+    //     }
+    // }, []);
 
     return(
         <div className="home-page">

@@ -35,6 +35,28 @@ const SidebarAdmin = () => {
                                 Página Inicial
                             </Link>
                         </li>
+                        <li className={location.pathname === "/editarpontocoleta" ? "active-route" : ""}>
+                            <i>
+                                <Pencil />
+                            </i>
+                            <Link
+                                to="/editarpontocoleta"
+                                
+                            >
+                                Editar Ponto de Coleta
+                            </Link>
+                        </li>
+                        <li className={location.pathname === "/cadastrarpontocoleta" ? "active-route" : ""}>
+                            <i>
+                                <PlusCircle />
+                            </i>
+                            <Link
+                                to="/cadastrarpontocoleta"
+                                
+                            >
+                                Cadastrar Ponto de Coleta
+                            </Link>
+                        </li>
                         <li className={location.pathname === "/editarusuario" ? "active-route" : ""}>
                             <i>
                                 <Pencil />
@@ -43,7 +65,7 @@ const SidebarAdmin = () => {
                                 to="/editarusuario"
                                 
                             >
-                                Editar Ponto de Coleta
+                                Editar Usuário
                             </Link>
                         </li>
                         <li className={location.pathname === "/cadastrarusuario" ? "active-route" : ""}>
@@ -54,7 +76,7 @@ const SidebarAdmin = () => {
                                 to="/cadastrarusuario"
                                 
                             >
-                                Cadastrar Novo Ponto
+                                Cadastrar Usuário
                             </Link>
                         </li>
                     </ul>

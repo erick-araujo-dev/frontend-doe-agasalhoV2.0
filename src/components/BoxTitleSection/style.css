@@ -46,8 +46,11 @@
     font-size: 30px;
     display: flex;
 }
+.opcoes-perfil{
+    z-index: 1;
+}
 
-.opcoes-perfil button{
+.opcoes-perfil button, .opcoes-perfil a{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -61,4 +64,5 @@
     border-radius: 5px;
     margin-top: 5px;
     font-size: 14px;
+   text-decoration: none;
 }

@@ -39,18 +39,11 @@ const FormEditarPontoColeta = ({ pontoColeta, mostrarFormulario }) => {
       window.location.reload();
       } catch (error) {
         if (error.response) {
-          const { status, data } = error.response;
-          if (status === 400) {
-            const errorMessage = error.response.data || "Erro ao editar o ponto de coleta";
-            alert(errorMessage);
-          } else if (status === 409) {
-            const errorMessage = error.response.data || "Erro ao editar o ponto de coleta";;
-            alert(errorMessage);
-          } else {
-            console.error("Erro ao editar o ponto de coleta", error);
-          }
+          alert(error.response.data)
+        } else if (error.request) {
+          console.error("Erro ao fazer a solicitação:", error.request);
         } else {
-          console.error("Erro ao editar o ponto de coleta", error);
+          console.error("Erro ao configurar a solicitação:", error.message);
         }
       }
   };
@@ -85,19 +78,19 @@ const FormEditarPontoColeta = ({ pontoColeta, mostrarFormulario }) => {
                       required
                     />
                   </div>
-                </div>
-
-                
+                </div>             
 
                 <div className="form-row">
                   <div>
                     <input
                       placeholder="CEP"
-                      type="number"
+                      type="text"
                       id="cep"
                       name="cep"
                       value={formData.cep.replace('-', '')}
                       onChange={handleChange}
+                      maxLength={8}
+                      inputMode="numeric"
                       onBlur={buscarEndereco}
                       required
                     />

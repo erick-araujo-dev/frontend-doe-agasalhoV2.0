@@ -1,98 +1,100 @@
 import React, { useState, useEffect } from "react";
 import SidebarAdmin from "../../../components/SidebarAdmin";
 import { Pencil, Trash } from "phosphor-react";
-import axios from "axios";
-import "./style.css";
-import FormEditarPontoColeta from "../../../components/FormEditarPontoColeta";
 import BoxTitleSection from "../../../components/BoxTitleSection";
-import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
+import FormEditarUsuario from "../../../components/FormEditarUsuario";
+import verifyAuthentication from "../../../utils/verifyAuthentication";
 
 const EditarUsuario = () => {
-  const [pontosColeta, setPontosColeta] = useState([]);
-  const [exibirFormulario, setExibirFormulario] = useState(false);
-  const [pontoColetaSelecionado, setPontoColetaSelecionado] = useState(null);
-  const [exibirConfirmacao, setExibirConfirmacao] = useState(false);
-  const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [displayForm, setDisplayForm] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const usuarioId = localStorage.getItem("usuarioId");
-        const userType = localStorage.getItem("usuarioTipo");
+  verifyAuthentication(); //verifica se o user esta autenticado
 
-        if (!token || !usuarioId) {
-            navigate("/login");
-        } else if (userType !== "admin") {
-            navigate("/unauthorized");
-        }
-    }, []);
-
-  const buscarpontosColeta = async () => {
+  const getUsers = async () => {
     try {
-      const response = await axiosWithAuth().get("http://localhost:5059/api/collectpoint/");
-      setPontosColeta(response.data.$values);
+      const response = await axiosWithAuth().get(
+        "http://localhost:5059/api/users/active"
+      );
+      setUsers(response.data.$values);
     } catch (error) {
       console.error("Erro ao obter usuários:", error);
     }
   };
 
   useEffect(() => {
-    buscarpontosColeta();
+    getUsers();
   }, []);
 
-  const editarPontosColeta = (id) => {
-    const pontoColeta = pontosColeta.find((pontoColeta) => pontoColeta.id === id);
-    setPontoColetaSelecionado(pontoColeta);
-    setExibirFormulario(true);
+  const editUser = (id) => {
+    const userFound = users.find((u) => u.id === id);
+    setSelectedUser(userFound);
+    setDisplayForm(true);
   };
 
-  const excluirUsuario = (id) => {
-    const pontoColeta = pontosColeta.find((pontoColeta) => pontoColeta.id === id);
-    setPontoColetaSelecionado(pontoColeta);
-    setExibirConfirmacao(true);
+  const deleteUser = (id) => {
+    const userFound = users.find((u) => u.id === id);
+    setSelectedUser(userFound);
+    setShowConfirmation(true);
   };
 
-  const confirmarExclusao = async () => {
+  const confirmDeletion = async () => {
     try {
-      await axiosWithAuth().delete(`https://localhost:7243/api/pontosColeta/excluir/${pontoColetaSelecionado.id}`);
-      setExibirConfirmacao(false);
-      await buscarpontosColeta();
+      await axiosWithAuth().put(
+        `http://localhost:5059/api/users/${selectedUser.id}/deactivate`
+      );
+      setShowConfirmation(false);
+      await getUsers();
     } catch (error) {
-      console.error("Erro ao excluir usuário:", error);
+      if (error.response) {
+        alert(error.response.data)
+      } else if (error.request) {
+        console.error("Erro ao fazer a solicitação:", error.request);
+      } else {
+        console.error("Erro ao configurar a solicitação:", error.message);
+      }
     }
   };
 
-  const handleCancelarExclusao = () => {
-    setExibirConfirmacao(false);
+  const handleCancelDeletion = () => {
+    setShowConfirmation(false);
   };
 
   return (
     <div className="editar-usuario">
       <SidebarAdmin />
       <main>
-      <BoxTitleSection titulo={"Editar ponto"}/>
+        <BoxTitleSection titulo={"Editar ponto"} />
 
         <div className="section-box">
-          {exibirFormulario ? (
-            <FormEditarPontoColeta
-              pontoColeta={pontoColetaSelecionado}
-              mostrarFormulario={() => setExibirFormulario(false)}
+          {displayForm ? (
+            <FormEditarUsuario
+              usuario={selectedUser}
+              mostrarFormulario={() => setDisplayForm(false)}
             />
           ) : (
             <div className="box-admin">
               <div className="title-box">
-                <p>Pontos de coleta e distribuição:</p>
+                <p>Usuários cadastrados:</p>
               </div>
-              {exibirConfirmacao ? (
+              {showConfirmation ? (
                 <div className="doacao-confirmada">
                   <h2>CONFIRMAR EXCLUSÃO!</h2>
-                  <p>Você está prestes a excluir o usuário:<br/>
-                    <strong>{pontoColetaSelecionado.nomePonto}</strong> <br/>
-                    Após realizar a exclusão todo o registro de estoque do usuário excluído será perdido.<br/>
-                    Esta ação é irreversível, certifique-se de que esteja certo disso.</p>
+                  <p>
+                    Você está prestes a excluir o usuário:
+                    <br />
+                    <strong>{selectedUser.nome}</strong> <br />
+                    Após realizar a exclusão o usuário não terá mais acesso ao sistema.
+                    <br />
+                    Esta ação é irreversível, certifique-se de que esteja certo
+                    disso.
+                  </p>
                   <div className="botoes-confirmacao">
-                    <button onClick={handleCancelarExclusao}>Cancelar</button>
-                    <button onClick={confirmarExclusao}>Confirmar</button>
+                    <button onClick={handleCancelDeletion}>Cancelar</button>
+                    <button onClick={confirmDeletion}>Confirmar</button>
                   </div>
                 </div>
               ) : (
@@ -101,21 +103,39 @@ const EditarUsuario = () => {
                     <table className="table-editar-usuario">
                       <thead>
                         <tr>
-                          <th>Unidade</th>
-                          <th>Usuarios Cadastrados</th>
-                          <th>Doações em estoque</th>
+                          <th>Nome</th>
+                          <th>Ponto de Coleta</th>
+                          <th>Tipo</th>
                           <th>Editar</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {pontosColeta.map((pontoColeta) => (
-                          <tr key={pontoColeta.id}>
-                            <td>{pontoColeta.nomePonto}</td>
-                            <td>{pontoColeta.quantidadeUsuarios}</td>
-                            <td>{pontoColeta.quantidadeProdutos}</td>
+                        {users.map((user) => (
+                          <tr
+                          key={user.id}>
+                            <td>{user.nome}</td>
                             <td>
-                              <Pencil className="icon-edit-delete" onClick={() => editarPontosColeta(pontoColeta.id)} />
-                              <Trash className="icon-edit-delete" onClick={() => excluirUsuario(pontoColeta.id)}/>
+                              {user.pontoColeta !== ""
+                                ? user.pontoColeta
+                                : "---------------"}
+                            </td>
+                            <td>{user.tipo}</td>
+                            <td>
+                              {user.tipo !== "admin" && (
+                                <Pencil
+                                className="icon-edit-delete"
+                                onClick={() => editUser(user.id)}
+                              />
+                                )}
+                                {user.tipo !== "admin" && (
+                                  <Trash
+                                  className="icon-edit-delete"
+                                  onClick={() => deleteUser(user.id)}
+                                  />
+                                )}
+                                {user.tipo === "admin" && (
+                                "-----------"
+                              )}
                             </td>
                           </tr>
                         ))}

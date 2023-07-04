@@ -1,23 +1,11 @@
 import SidebarUser from '../../../components/SidebarAdmin';
 import logo_home from "../../../assets/images/logo-doe-agasalho.png";
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import verifyAuthentication from '../../../utils/verifyAuthentication';
 
 const HomePageAdmin = () => {
     const usuarioNome = localStorage.getItem("usuarioNome")
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const usuarioId = localStorage.getItem("usuarioId");
-        const userType = localStorage.getItem("usuarioTipo");
-
-        if (!token || !usuarioId) {
-            navigate("/login");
-        } else if (userType !== "admin") {
-            navigate("/unauthorized");
-        }
-    }, []);
+    verifyAuthentication(); //verifica se o user esta autenticado
 
     return(
         <div className="home-page">

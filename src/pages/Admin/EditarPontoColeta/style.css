@@ -84,5 +84,6 @@
 
 .doacao-confirmada strong{
     font-size: 20px;
-    text-decoration: underline;
+    text-transform: uppercase;
+    font-weight: 600;
 }
