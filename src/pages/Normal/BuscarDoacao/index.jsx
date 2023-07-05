@@ -5,6 +5,7 @@ import BoxTitleSection from "../../../components/BoxTitleSection";
 import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import { getCharacteristics, getGenders, getSizes, getTypes } from "../../../utils/api";
+import { handleAmountChange, handleIncrease, handleReduce } from "../../../utils/helpers";
 
 const BuscarDoacao = () => {
   const [resultados, setResultados] = useState([]);
@@ -124,8 +125,9 @@ const BuscarDoacao = () => {
         "http://localhost:5059/api/donations/inventory/exit",
         {
           produtoId: itemSelecionado.id,
-          quantidade: 1
+          quantidade: itemSelecionado.quantidade
         }
+
       );
 
       setDoacaoConfirmada(false);
@@ -134,7 +136,16 @@ const BuscarDoacao = () => {
 
       handleAtualizarEstoque();
     } catch (error) {
-      console.error("Ocorreu um erro ao confirmar doação:", error);
+      if (error.response) {
+        const { status, data } = error.response;
+        if (status === 400) {
+          alert(data);
+        } else if (status === 500) {
+          console.log('Erro interno do servidor');
+        }
+      } else {
+        console.log('Erro na requisição:', error.message);
+      }
     }
   };
 
@@ -184,10 +195,10 @@ const BuscarDoacao = () => {
               {genders.map((gender) => (
                 <option key={gender} value={gender}>
                   {gender === "M"
-                          ? "Masculino"
-                          : gender === "F"
-                          ? "Feminino"
-                          : "Unissex"}
+                    ? "Masculino"
+                    : gender === "F"
+                    ? "Feminino"
+                    : "Unissex"}
                 </option>
               ))}
             </select>
@@ -223,7 +234,10 @@ const BuscarDoacao = () => {
                 </thead>
                 <tbody>
                   {resultados.map((item) => (
-                    <tr key={item.$id}>
+                    <tr
+                      key={item.$id}
+                      className={item.estoque === 0 ? "out-of-stock" : ""}
+                    >
                       <td>{item.tipo}</td>
                       <td>{item.caracteristica}</td>
                       <td>{item.tamanho}</td>
@@ -236,12 +250,18 @@ const BuscarDoacao = () => {
                       </td>
                       <td>{item.estoque}</td>
                       <td>
-                        <button
-                          className="btn-doar"
-                          onClick={() => handleDoar(item)}
-                        >
-                          Doar
-                        </button>
+                        {item.estoque === 0 ? (
+                          <button className="btn-doar" disabled>
+                            Indisponível
+                          </button>
+                        ) : (
+                          <button
+                            className="btn-doar"
+                            onClick={() => handleDoar(item)}
+                          >
+                            Doar
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -249,49 +269,77 @@ const BuscarDoacao = () => {
               </table>
             )}
           </div>
-          {doacaoConfirmada && itemSelecionado && (
-            <div className="overlay">
-              <div className="doacao-confirmada">
-                <h2>CONFIRMAR DOAÇÃO</h2>
-                <p>Você está prestes a doar o seguinte item:</p>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Tipo</th>
-                      <th>Estilo</th>
-                      <th>Tamanho</th>
-                      <th>Gênero</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{itemSelecionado.tipo}</td>
-                      <td>{itemSelecionado.caracteristica}</td>
-                      <td>{itemSelecionado.tamanho}</td>
-                      <td>{itemSelecionado.genero === "M" ? "Masculino" : item.genero === "F" ? "Feminino": "Unissex"}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div className="botoes-confirmacao">
-                  <button onClick={handleCancelarDoacao}>Cancelar</button>
-                  <button onClick={handleConfirmarDoacao}>Confirmar</button>
+          <div className="container-doacao-confirmada">
+            {doacaoConfirmada && itemSelecionado && (
+              <div className="overlay">
+                <div className="doacao-confirmada">
+                  <h2>CONFIRMAR DOAÇÃO</h2>
+                  <p>Você está prestes a doar o seguinte item:</p>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Tipo</th>
+                        <th>Estilo</th>
+                        <th>Tamanho</th>
+                        <th>Gênero</th>
+                        <th>Estoque</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{itemSelecionado.tipo}</td>
+                        <td>{itemSelecionado.caracteristica}</td>
+                        <td>{itemSelecionado.tamanho}</td>
+                        <td>
+                          {itemSelecionado.genero === "M"
+                            ? "Masculino"
+                            : itemSelecionado.genero === "F"
+                            ? "Feminino"
+                            : "Unissex"}
+                        </td>
+                        <td>{itemSelecionado.estoque}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div className="box-quantidade">
+                    <p>Quantidade: </p>
+                    <input
+                      type="number"
+                      value={itemSelecionado.quantidade}
+                      id="quantidade"
+                      defaultValue={1}
+                      onChange={(e) => {
+                        const valor = parseInt(e.target.value, 10);
+                        if (valor < 1) {
+                          e.target.value = 1;
+                        }
+                        setItemSelecionado({ ...itemSelecionado, quantidade: valor });
+                      }
+                    }
+                    />
+                  </div>
+
+                  <div className="botoes-confirmacao">
+                    <button onClick={handleCancelarDoacao}>Cancelar</button>
+                    <button onClick={handleConfirmarDoacao}>Confirmar</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          {doacaoEfetuada && (
-            <div className="overlay" onClick={() => setDoacaoEfetuada(false)}>
-              <div className="mensagem-doacao-efetuada">
-                <p>DOAÇÃO EFETUADA COM SUCESSO!</p>
-                <span
-                  className="fechar"
-                  onClick={() => setDoacaoEfetuada(false)}
-                >
-                  x
-                </span>
+            )}
+            {doacaoEfetuada && (
+              <div className="overlay" onClick={() => setDoacaoEfetuada(false)}>
+                <div className="mensagem-doacao-efetuada">
+                  <p>DOAÇÃO EFETUADA COM SUCESSO!</p>
+                  <span
+                    className="fechar"
+                    onClick={() => setDoacaoEfetuada(false)}
+                  >
+                    x
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </main>
     </div>
