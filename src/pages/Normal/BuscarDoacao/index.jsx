@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {  handleTipoChange } from "../../../utils/helpers";
 import SidebarUser from "../../../components/SidebarUser";
 import "./style.css";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
+import { getCharacteristics, getGenders, getSizes, getTypes } from "../../../utils/api";
 
 const BuscarDoacao = () => {
   const [resultados, setResultados] = useState([]);
@@ -15,60 +15,83 @@ const BuscarDoacao = () => {
   const [doacaoNaoEncontrada, setDoacaoNaoEncontrada] = useState(false);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   const usuarioId = localStorage.getItem("usuarioId");
-  //   const userType = localStorage.getItem("usuarioTipo");
+  const [types, setTypes] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [characteristics, setCharacteristics] = useState([]);
+  const [genders, setGenders] = useState([]);
 
-  //   if (!token || !usuarioId) {
-  //     navigate("/login");
-  //   } else if (userType !== "normal") {
-  //     navigate("/unauthorized"); 
-  //   }
-  // }, []);
+  useEffect(() => {
+    const getValueById = (elementId) => {
+      return document.getElementById(elementId).value;
+    };
+    const type = getValueById("tipo");
+    const size = getValueById("tamanho");
+    const gender = getValueById("genero");
+    const characteristic = getValueById("caracteristica");
+
+    getTypes(setTypes, size, gender, characteristic);
+    getSizes(setSizes, type, gender, characteristic);
+    getCharacteristics(setCharacteristics, type, size, gender);
+    getGenders(setGenders, type, size, characteristic);
+    handleFetch();
+  }, []);
+
+  const handleSelectChange = (event) => {
+    const { id, value } = event.target;
+    const type = id === "tipo" ? value : document.getElementById("tipo").value;
+    const size = id === "tamanho" ? value : document.getElementById("tamanho").value;
+    const gender = id === "genero" ? value : document.getElementById("genero").value;
+    const characteristic = id === "caracteristica" ? value : document.getElementById("caracteristica").value;
   
-  const handleBuscar = async () => {
+    getTypes(setTypes, size, gender, characteristic);
+    getSizes(setSizes, type, gender, characteristic);
+    getCharacteristics(setCharacteristics, type, size, gender);
+    getGenders(setGenders, type, size, characteristic);
+  };
+
+  const handleFetch = async () => {
     setDoacaoEfetuada(false);
-    const tipo = document.getElementById("tipo").value;
-    const tamanho = document.getElementById("tamanho").value;
-    const genero = document.getElementById("genero").value;
+    const type = document.getElementById("tipo").value;
+    const characteristic = document.getElementById("caracteristica").value;
+    const size = document.getElementById("tamanho").value;
+    const gender = document.getElementById("genero").value;
 
     try {
-      const response = await axiosWithAuth().post(
-        "https://localhost:7243/api/produtos/buscar",
-        {
-          usuarioId: localStorage.getItem("usuarioId"),
-          tipo: tipo,
-          tamanho: tamanho,
-          genero: genero,
-        }
+      const response = await axiosWithAuth().get(
+        "http://localhost:5059/api/products?type=" +
+          type  +
+          "&size=" +
+          size +
+          "&gender=" +
+          gender +
+          "&characteristic=" + characteristic
       );
 
-      const produtos = response.data.$values || [];
-      setResultados(produtos);
+      const products = response.data.$values || [];
+      setResultados(products);
       setDoacaoConfirmada(false);
       setItemSelecionado(null);
-      setDoacaoNaoEncontrada(produtos.length === 0);
+      setDoacaoNaoEncontrada(products.length === 0);
     } catch (error) {
       console.error("Ocorreu um erro ao buscar os produtos:", error);
     }
   };
 
   const handleAtualizarEstoque = async () => {
-    const usuarioId = 2;
-    const tipo = document.getElementById("tipo").value;
-    const tamanho = document.getElementById("tamanho").value;
-    const genero = document.getElementById("genero").value;
+    const type = document.getElementById("tipo").value;
+    const characteristic = document.getElementById("caracteristica").value;
+    const size = document.getElementById("tamanho").value;
+    const gender = document.getElementById("genero").value;
 
     try {
-      const response = await axiosWithAuth().post(
-        "https://localhost:7243/api/produtos/buscar",
-        {
-          usuarioId: usuarioId,
-          tipo: tipo,
-          tamanho: tamanho,
-          genero: genero,
-        }
+      const response = await axiosWithAuth().get(
+        "http://localhost:5059/api/products?type=" +
+          type  +
+          "&size=" +
+          size +
+          "&gender=" +
+          gender +
+          "&characteristic=" + characteristic
       );
 
       setResultados(response.data.$values || []);
@@ -98,9 +121,10 @@ const BuscarDoacao = () => {
   const handleConfirmarDoacao = async () => {
     try {
       const response = await axiosWithAuth().post(
-        "https://localhost:7243/api/doacoes/saidadoacao",
+        "http://localhost:5059/api/donations/inventory/exit",
         {
           produtoId: itemSelecionado.id,
+          quantidade: 1
         }
       );
 
@@ -111,7 +135,6 @@ const BuscarDoacao = () => {
       handleAtualizarEstoque();
     } catch (error) {
       console.error("Ocorreu um erro ao confirmar doação:", error);
-
     }
   };
 
@@ -119,61 +142,60 @@ const BuscarDoacao = () => {
     <div className="buscar-doacao">
       <SidebarUser />
       <main>
-        <BoxTitleSection titulo={"Buscar doaçao"}/>
+        <BoxTitleSection titulo={"Buscar doaçao"} />
         <div className="container-select-busca">
           <div className="select-busca">
             <label htmlFor="tipo">Tipo:</label>
-            <select
-              id="tipo"
-              onChange={(event) => handleTipoChange(event, setTamanhos)}
-            >
+            <select id="tipo" onChange={handleSelectChange}>
               <option value="">Selecionar</option>
-              <option value="Blusa">Blusa</option>
-              <option value="Jaqueta">Jaqueta</option>
-              <option value="Moletom">Moletom</option>
-              <option value="Camiseta">Camiseta</option>
-              <option value="Camisa">Camisa</option>
-              <option value="Calça">Calça</option>
-              <option value="Calçado">Calçado</option>
-              <option value="Gorro">Gorro</option>
-              <option value="Cachecol">Cachecol</option>
-              <option value="Meias">Meias</option>
-              <option value="Cobertor">Cobertor</option>
+              {types.map((tipo) => (
+                <option key={tipo.id} value={tipo.id}>
+                  {tipo.nome}
+                </option>
+              ))}
             </select>
           </div>
           <div className="select-busca">
             <label htmlFor="caracteristica">Estilo:</label>
-            <select id="caracteristica">
-            <option value="">Selecionar</option>
-            <option value="Jeans">Jeans</option>
-            <option value="Xadrez">Xadrez</option>
-              
+            <select id="caracteristica" onChange={handleSelectChange}>
+              <option value="">Selecionar</option>
+              {characteristics.map((characteristic) => (
+                <option key={characteristic} value={characteristic}>
+                  {characteristic}
+                </option>
+              ))}
             </select>
           </div>
           <div className="select-busca">
             <label htmlFor="tamanho">Tamanho:</label>
-            <select id="tamanho">
+            <select id="tamanho" onChange={handleSelectChange}>
               <option value="">Selecionar</option>
-              {tamanhos.map((size) => (
-                <option value={size} key={size}>
-                  {size}
+              {sizes.map((size) => (
+                <option value={size.id} key={size.id}>
+                  {size.nome}
                 </option>
               ))}
             </select>
           </div>
           <div className="select-busca">
             <label htmlFor="genero">Gênero:</label>
-            <select id="genero">
+            <select id="genero" onChange={handleSelectChange}>
               <option value="">Selecionar</option>
-              <option value="M">Masculino</option>
-              <option value="F">Feminino</option>
-              <option value="U">Unissex</option>
+              {genders.map((gender) => (
+                <option key={gender} value={gender}>
+                  {gender === "M"
+                          ? "Masculino"
+                          : gender === "F"
+                          ? "Feminino"
+                          : "Unissex"}
+                </option>
+              ))}
             </select>
           </div>
           <button
             type="button"
             className="btn-buscar-cadastrar"
-            onClick={handleBuscar}
+            onClick={handleFetch}
           >
             Buscar
           </button>
@@ -236,6 +258,7 @@ const BuscarDoacao = () => {
                   <thead>
                     <tr>
                       <th>Tipo</th>
+                      <th>Estilo</th>
                       <th>Tamanho</th>
                       <th>Gênero</th>
                     </tr>
@@ -243,8 +266,9 @@ const BuscarDoacao = () => {
                   <tbody>
                     <tr>
                       <td>{itemSelecionado.tipo}</td>
+                      <td>{itemSelecionado.caracteristica}</td>
                       <td>{itemSelecionado.tamanho}</td>
-                      <td>{itemSelecionado.genero}</td>
+                      <td>{itemSelecionado.genero === "M" ? "Masculino" : item.genero === "F" ? "Feminino": "Unissex"}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -256,12 +280,12 @@ const BuscarDoacao = () => {
             </div>
           )}
           {doacaoEfetuada && (
-            <div className="overlay" onClick={() => setCadastroEfetuado(false)}>
+            <div className="overlay" onClick={() => setDoacaoEfetuada(false)}>
               <div className="mensagem-doacao-efetuada">
                 <p>DOAÇÃO EFETUADA COM SUCESSO!</p>
                 <span
                   className="fechar"
-                  onClick={() => setCadastroEfetuado(false)}
+                  onClick={() => setDoacaoEfetuada(false)}
                 >
                   x
                 </span>

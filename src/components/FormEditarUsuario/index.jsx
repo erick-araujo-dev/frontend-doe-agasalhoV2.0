@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosWithAuth from "../../utils/axiosWithAuth";
+import "./style.css"
 
 const FormEditarUsuario = ({ usuario, mostrarFormulario }) => {
   const [formData, setFormData] = useState({

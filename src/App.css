@@ -22,7 +22,7 @@ button, a{
 .box-home {
   width: 70vw;
   height: 70vh;
-  margin: auto;
+  margin: 60px auto;
   background: rgba(203, 190, 176, 0.5);
   border: 1px solid #8C6C4D;
   backdrop-filter: blur(2px);
@@ -33,7 +33,9 @@ button, a{
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   height: 100%;
+  max-height: 600px;
 }
 
 .logo-home{
@@ -229,3 +231,15 @@ button, a{
   font-weight: 600;
 }
 
+/* icon de mostra senha */
+
+.icon-button{
+  background-color: var(--golden-rod);
+  border: 2px solid var(--golden-rod);
+  border-radius: 4px;
+  margin-right: 5px;
+}
+.i-eye{
+  color: var(--white-smoke);
+  font-size: 28px;
+}

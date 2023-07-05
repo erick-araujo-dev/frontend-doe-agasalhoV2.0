@@ -4,7 +4,7 @@ import { Pencil, Trash } from "phosphor-react";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import FormEditarUsuario from "../../../components/FormEditarUsuario";
-import verifyAuthentication from "../../../utils/verifyAuthentication";
+import { verifyAuthenticationAdmin } from "../../../utils/verifyAuthentication";
 
 const EditarUsuario = () => {
   const [users, setUsers] = useState([]);
@@ -12,7 +12,7 @@ const EditarUsuario = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  verifyAuthentication(); //verifica se o user esta autenticado
+  verifyAuthenticationAdmin(); //verifica se o user esta autenticado
 
   const getUsers = async () => {
     try {
@@ -67,7 +67,7 @@ const EditarUsuario = () => {
     <div className="editar-usuario">
       <SidebarAdmin />
       <main>
-        <BoxTitleSection titulo={"Editar ponto"} />
+        <BoxTitleSection titulo={"Editar usuário"} />
 
         <div className="section-box">
           {displayForm ? (

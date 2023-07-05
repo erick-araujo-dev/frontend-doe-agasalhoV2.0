@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import './style.css';
-import { buscarEnderecoPorCep } from "../../utils/helpers";
 import axiosWithAuth from "../../utils/axiosWithAuth";
+import { getAddressByZipCode } from "../../utils/api";
 
 const FormEditarPontoColeta = ({ pontoColeta, mostrarFormulario }) => {
 
@@ -48,8 +48,8 @@ const FormEditarPontoColeta = ({ pontoColeta, mostrarFormulario }) => {
       }
   };
 
-  const buscarEndereco = async () => {
-    await buscarEnderecoPorCep(formData.cep, setFormData);
+  const getAddress = async () => {
+    await getAddressByZipCode(formData.cep, setFormData);
   };
 
   const handleCancelar = () => {
@@ -91,7 +91,7 @@ const FormEditarPontoColeta = ({ pontoColeta, mostrarFormulario }) => {
                       onChange={handleChange}
                       maxLength={8}
                       inputMode="numeric"
-                      onBlur={buscarEndereco}
+                      onBlur={getAddress}
                       required
                     />
                   </div>

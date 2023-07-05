@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import SidebarAdmin from "../../../components/SidebarAdmin";
-import axios from "axios";
 import "./style.css";
-import { buscarEnderecoPorCep } from "../../../utils/helpers";
 import BoxTitleSection from "../../../components/BoxTitleSection";
-import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
+import {verifyAuthenticationAdmin} from "../../../utils/verifyAuthentication";
+import { getAddressByZipCode } from "../../../utils/api";
 
 const CadastrarPontoColeta = () => {
-  const [dados, setDados] = useState({
+  const [data, setData] = useState({
     nomePonto: "",
     cep: "",
     logradouro: "",
@@ -18,43 +17,32 @@ const CadastrarPontoColeta = () => {
     cidade: "",
     estado: "",
   });
-  const [cadastroEfetuado, setCadastroEfetuado] = useState(false);
+  const [registrationCompleted, setRegistrationCompleted] = useState(false);
 
-  const navigate = useNavigate();
+  verifyAuthenticationAdmin();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   const usuarioId = localStorage.getItem("usuarioId");
-  //   const userType = localStorage.getItem("usuarioTipo");
-
-  //   if (!token || !usuarioId) {
-  //     navigate("/login");
-  //   } else if (userType !== "admin") {
-  //     navigate("/unauthorized");
-  //   }
-  // }, []);
   const handleChange = (event) => {
     const { name, value } = event.target;
     const parsedValue = name === "numero" ? parseInt(value) : value;
-    setDados((prevDados) => ({
-      ...prevDados,
+    setData((prevData) => ({
+      ...prevData,
       [name]: parsedValue,
     }));
-    setCadastroEfetuado(false);
+    setRegistrationCompleted(false);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const requestBody = {
-        nomePonto: dados.nomePonto,
-        cep: dados.cep.replace('-', ''),
-        logradouro: dados.logradouro,
-        numero: dados.numero,
-        complemento: dados.complemento,
-        bairro: dados.bairro,
-        cidade: dados.cidade,
-        estado: dados.estado,
+        nomePonto: data.nomePonto,
+        cep: data.cep.replace('-', ''),
+        logradouro: data.logradouro,
+        numero: data.numero,
+        complemento: data.complemento,
+        bairro: data.bairro,
+        cidade: data.cidade,
+        estado: data.estado,
       };
 
       const response = await axiosWithAuth().post(
@@ -63,8 +51,8 @@ const CadastrarPontoColeta = () => {
       );
 
       if (response.status === 200) {
-        setCadastroEfetuado(true);
-        setDados({
+        setRegistrationCompleted(true);
+        setData({
           nomePonto: "",
           cep: "",
           logradouro: "",
@@ -78,17 +66,20 @@ const CadastrarPontoColeta = () => {
 
     } catch (error) {
       if (error.response) {
-        alert(error.response.data)
-      } else if (error.request) {
-        console.error("Erro ao fazer a solicitação:", error.request);
+        const { status, data } = error.response;
+        if (status === 400) {
+          alert(data);
+        } else if (status === 500) {
+          console.log('Erro interno do servidor');
+        }
       } else {
-        console.error("Erro ao configurar a solicitação:", error.message);
+        console.log('Erro na requisição:', error.message);
       }
     }
   };
 
-  const buscarEndereco = async () => {
-    await buscarEnderecoPorCep(dados.cep, setDados);
+  const getAddress = async () => {
+    await getAddressByZipCode(data.cep, setData);
   };
 
   return (
@@ -110,7 +101,7 @@ const CadastrarPontoColeta = () => {
                       type="text"
                       id="nome"
                       name="nomePonto"
-                      value={dados.nomePonto}
+                      value={data.nomePonto}
                       onChange={handleChange}
                       required
                     />
@@ -123,9 +114,9 @@ const CadastrarPontoColeta = () => {
                       type="text"
                       id="cep"
                       name="cep"
-                      value={dados.cep.replace('-', '')}
+                      value={data.cep.replace('-', '')}
                       onChange={handleChange}
-                      onBlur={buscarEndereco}
+                      onBlur={getAddress}
                       maxLength={8}
                       inputMode="numeric"
                       required
@@ -139,7 +130,7 @@ const CadastrarPontoColeta = () => {
                       type="text"
                       id="rua"
                       name="logradouro"
-                      value={dados.logradouro}
+                      value={data.logradouro}
                       onChange={handleChange}
                       required
                     />
@@ -153,7 +144,7 @@ const CadastrarPontoColeta = () => {
                       type="number"
                       id="numero"
                       name="numero"
-                      value={dados.numero}
+                      value={data.numero}
                       onChange={handleChange}
                       required
                     />
@@ -166,7 +157,7 @@ const CadastrarPontoColeta = () => {
                         type="text"
                         id="complemento"
                         name="complemento"
-                        value={dados.complemento}
+                        value={data.complemento}
                         onChange={handleChange}
                       />
                     </div>
@@ -178,7 +169,7 @@ const CadastrarPontoColeta = () => {
                         type="text"
                         id="bairro"
                         name="bairro"
-                        value={dados.bairro}
+                        value={data.bairro}
                         onChange={handleChange}
                         required
                       />
@@ -191,7 +182,7 @@ const CadastrarPontoColeta = () => {
                       type="text"
                       id="cidade"
                       name="cidade"
-                      value={dados.cidade}
+                      value={data.cidade}
                       onChange={handleChange}
                       required
                     />
@@ -204,7 +195,7 @@ const CadastrarPontoColeta = () => {
                         type="text"
                         id="estado"
                         name="estado"
-                        value={dados.estado}
+                        value={data.estado}
                         onChange={handleChange}
                         maxLength={2}
                         required
@@ -215,13 +206,13 @@ const CadastrarPontoColeta = () => {
                   Cadastrar
                 </button>
               </form>
-              {cadastroEfetuado && (
-                <div className="overlay" onClick={() => setCadastroEfetuado(false)}>
+              {registrationCompleted && (
+                <div className="overlay" onClick={() => setRegistrationCompleted(false)}>
                   <div className="mensagem-doacao-efetuada">
                     <p>CADASTRO EFETUADO COM SUCESSO!</p>
                     <span
                       className="fechar"
-                      onClick={() => setCadastroEfetuado(false)}
+                      onClick={() => setRegistrationCompleted(false)}
                     >
                       x
                     </span>

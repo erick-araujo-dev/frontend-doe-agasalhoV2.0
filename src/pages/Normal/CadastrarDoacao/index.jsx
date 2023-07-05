@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { handleTipoChange } from "../../../utils/helpers";
 import SidebarUser from "../../../components/SidebarUser";
 import "./style.css";
 import BoxTitleSection from "../../../components/BoxTitleSection";
@@ -137,10 +136,7 @@ const CadastrarDoacao = () => {
                         <div className="container-select-cadastro">
                             <div className="select-cadastro">
                                 <label htmlFor="tipo">Tipo:</label>
-                                <select
-                                    id="tipo"
-                                    onChange={(event) => handleTipoChange(event, setTamanhos)}
-                                >
+                                <select id="tipo">
                                     <option value="">Selecionar</option>
                                     <option value="Blusa">Blusa</option>
                                     <option value="Jaqueta">Jaqueta</option>

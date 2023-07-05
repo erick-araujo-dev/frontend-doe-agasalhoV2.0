@@ -1,68 +1,42 @@
 import React, { useState, useEffect } from "react";
 import SidebarAdmin from "../../../components/SidebarAdmin";
 import { Pencil, Trash } from "phosphor-react";
-import axios from "axios";
 import "./style.css";
 import FormEditarPontoColeta from "../../../components/FormEditarPontoColeta";
 import BoxTitleSection from "../../../components/BoxTitleSection";
-import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
+import {verifyAuthenticationAdmin} from "../../../utils/verifyAuthentication";
+import { getCollectionPoints } from "../../../utils/api";
 
 const EditarPontoColeta = () => {
-  const [pontosColeta, setPontosColeta] = useState([]);
-  const [exibirFormulario, setExibirFormulario] = useState(false);
-  const [pontoColetaSelecionado, setPontoColetaSelecionado] = useState(null);
-  const [exibirConfirmacao, setExibirConfirmacao] = useState(false);
-  const navigate = useNavigate();
+  const [collectionPoints, setCollectionPoints] = useState([]);
+  const [displayForm, setDisplayForm] = useState(false);
+  const [selectedCollectPoint, setSelectedCollectPoint] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
-    // useEffect(() => {
-    //     const token = localStorage.getItem("token");
-    //     const usuarioId = localStorage.getItem("usuarioId");
-    //     const userType = localStorage.getItem("usuarioTipo");
-
-    //     if (!token || !usuarioId) {
-    //         navigate("/login");
-    //     } else if (userType !== "admin") {
-    //         navigate("/unauthorized");
-    //     }
-    // }, []);
-
-  const buscarpontosColeta = async () => {
-    try {
-      const response = await axiosWithAuth().get("http://localhost:5059/api/collectpoint/");
-      setPontosColeta(response.data.$values);
-    } catch (error) {
-      if (error.response) {
-        alert(error.response.data)
-      } else if (error.request) {
-        console.error("Erro ao fazer a solicitação:", error.request);
-      } else {
-        console.error("Erro ao configurar a solicitação:", error.message);
-      }
-    }
-  };
+  verifyAuthenticationAdmin(); 
 
   useEffect(() => {
-    buscarpontosColeta();
+    getCollectionPoints(setCollectionPoints);
   }, []);
 
-  const editarPontosColeta = (id) => {
-    const pontoColetaEncontrado = pontosColeta.find((pontoColeta) => pontoColeta.id === id);
-    setPontoColetaSelecionado(pontoColetaEncontrado);
-    setExibirFormulario(true);
+  const editCollectPoint = (id) => {
+    const collectPointFound = collectionPoints.find((p) => p.id === id);
+    setSelectedCollectPoint(collectPointFound);
+    setDisplayForm(true);
   };
 
-  const excluirUsuario = (id) => {
-    const pontoColeta = pontosColeta.find((pontoColeta) => pontoColeta.id === id);
-    setPontoColetaSelecionado(pontoColeta);
-    setExibirConfirmacao(true);
+  const deleteCollectPoint = (id) => {
+    const collectPointFound = collectionPoints.find((p) => p.id === id);
+    setSelectedCollectPoint(collectPointFound);
+    setShowConfirmation(true);
   };
 
-  const confirmarExclusao = async () => {
+  const confirmDeletion = async () => {
     try {
-      await axiosWithAuth().put(`http://localhost:5059/api/collectpoint/${pontoColetaSelecionado.id}/deactivate`);
-      setExibirConfirmacao(false);
-      await buscarpontosColeta();
+      await axiosWithAuth().put(`http://localhost:5059/api/collectpoint/${selectedCollectPoint.id}/deactivate`);
+      setShowConfirmation(false);
+      await getCollectionPoints();
     } catch (error) {
       if (error.response) {
         alert(error.response.data)
@@ -74,8 +48,8 @@ const EditarPontoColeta = () => {
     }
   };
 
-  const handleCancelarExclusao = () => {
-    setExibirConfirmacao(false);
+  const handleCancelDeletion = () => {
+    setShowConfirmation(false);
   };
 
   return (
@@ -85,26 +59,26 @@ const EditarPontoColeta = () => {
       <BoxTitleSection titulo={"Editar ponto"}/>
 
         <div className="section-box">
-          {exibirFormulario ? (
+          {displayForm ? (
             <FormEditarPontoColeta
-              pontoColeta={pontoColetaSelecionado}
-              mostrarFormulario={() => setExibirFormulario(false)}
+              pontoColeta={selectedCollectPoint}
+              mostrarFormulario={() => setDisplayForm(false)}
             />
           ) : (
             <div className="box-admin">
               <div className="title-box">
                 <p>Pontos de coleta e distribuição:</p>
               </div>
-              {exibirConfirmacao ? (
+              {showConfirmation ? (
                 <div className="doacao-confirmada">
                   <h2>CONFIRMAR EXCLUSÃO!</h2>
                   <p>Você está prestes a excluir o usuário:<br/>
-                    <strong>{pontoColetaSelecionado.nomePonto}</strong> <br/>
+                    <strong>{selectedCollectPoint.nomePonto}</strong> <br/>
                     Após realizar a exclusão todo o registro de estoque do usuário excluído será perdido.<br/>
                     Esta ação é irreversível, certifique-se de que esteja certo disso.</p>
                   <div className="botoes-confirmacao">
-                    <button onClick={handleCancelarExclusao}>Cancelar</button>
-                    <button onClick={confirmarExclusao}>Confirmar</button>
+                    <button onClick={handleCancelDeletion}>Cancelar</button>
+                    <button onClick={confirmDeletion}>Confirmar</button>
                   </div>
                 </div>
               ) : (
@@ -120,14 +94,14 @@ const EditarPontoColeta = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {pontosColeta.map((pontoColeta) => (
+                        {collectionPoints.map((pontoColeta) => (
                           <tr key={pontoColeta.id}>
                             <td>{pontoColeta.nomePonto}</td>
                             <td>{pontoColeta.quantidadeUsuarios}</td>
                             <td>{pontoColeta.quantidadeProdutos}</td>
                             <td>
-                              <Pencil className="icon-edit-delete" onClick={() => editarPontosColeta(pontoColeta.id)} />
-                              <Trash className="icon-edit-delete" onClick={() => excluirUsuario(pontoColeta.id)}/>
+                              <Pencil className="icon-edit-delete" onClick={() => editCollectPoint(pontoColeta.id)} />
+                              <Trash className="icon-edit-delete" onClick={() => deleteCollectPoint(pontoColeta.id)}/>
                             </td>
                           </tr>
                         ))}

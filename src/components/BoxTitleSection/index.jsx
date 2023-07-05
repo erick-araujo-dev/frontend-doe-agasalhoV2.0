@@ -52,7 +52,7 @@ const BoxTitleSection = ({ titulo }) => {
         {mostrarOpcoes && (
           <div className="opcoes-perfil">
             <Link to="/editarnome">Editar Nome</Link>
-            <button>Alterar Senha</button>
+            <Link to="/alterarsenha">Alterar Senha</Link>
             <button onClick={handleLogoutClick}>Sair do Sistema</button>
           </div>
         )}

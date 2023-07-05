@@ -1,66 +1,56 @@
 import React, { useEffect, useState } from "react";
 import SidebarAdmin from "../../../components/SidebarAdmin";
 import BoxTitleSection from "../../../components/BoxTitleSection";
-import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
-import verifyAuthentication from "../../../utils/verifyAuthentication";
+import {verifyAuthenticationAdmin} from "../../../utils/verifyAuthentication";
+import { getCollectionPoints } from "../../../utils/api";
+import { Eye, EyeClosed } from "phosphor-react";
 
 const CadastrarUsuario = () => {
-  const [dados, setDados] = useState({
+  const [data, setData] = useState({
     nome: "",
     email: "",
     senha: "",
     tipo: "",
     pontoColetaId: "",
+    showNewPassword: false
   });
 
-  const [mostrarPontoColeta, setMostrarPontoColeta] = useState(true);
-  const [pontosColeta, setPontosColeta] = useState([]);
-  const [cadastroEfetuado, setCadastroEfetuado] = useState(false);
-  const navigate = useNavigate();
+  const [showCollectPoint, setShowColectPoint] = useState(true);
+  const [collectionPoints, setCollectionPoints] = useState([]);
+  const [registrationCompleted, setRegistrationCompleted] = useState(false);
 
-  verifyAuthentication(); //Verifiva se o user esta autenticado
+  verifyAuthenticationAdmin(); //Verifiva se o user esta autenticado
 
   useEffect(() => {
-    buscarPontosColeta();
+    getCollectionPoints(setCollectionPoints);
   }, []);
-
-  const buscarPontosColeta = async () => {
-    try {
-      const response = await axiosWithAuth().get(
-        "http://localhost:5059/api/collectpoint"
-      );
-      setPontosColeta(response.data.$values);
-    } catch (error) {
-      console.error("Erro ao obter pontos de coleta:", error);
-    }
-  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     const parsedValue = name === "numero" ? parseInt(value) : value;
-    setDados((prevDados) => ({
-      ...prevDados,
+    setData((prevData) => ({
+      ...prevData,
       [name]: parsedValue,
     }));
 
     if (name === "tipo" && value === "admin") {
-      setMostrarPontoColeta(false);
+      setShowColectPoint(false);
     } else {
-      setMostrarPontoColeta(true);
+      setShowColectPoint(true);
     }
-    setCadastroEfetuado(false);
+    setRegistrationCompleted(false);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const requestBody = {
-        nome: dados.nome,
-        email: dados.email,
-        senha: dados.senha,
-        tipo: dados.tipo,
-        pontoColetaId: dados.pontoColetaId,
+        nome: data.nome,
+        email: data.email,
+        senha: data.senha,
+        tipo: data.tipo,
+        pontoColetaId: data.pontoColetaId,
       };
 
       const response = await axiosWithAuth().post(
@@ -69,8 +59,8 @@ const CadastrarUsuario = () => {
       );
 
       if (response.status === 200) {
-        setCadastroEfetuado(true);
-        setDados({
+        setRegistrationCompleted(true);
+        setData({
           nome: "",
           email: "",
           senha: "",
@@ -80,20 +70,36 @@ const CadastrarUsuario = () => {
       }
     } catch (error) {
       if (error.response) {
-        alert(error.response.data)
-      } else if (error.request) {
-        console.error("Erro ao fazer a solicitação:", error.request);
+        const { status, data } = error.response;
+        if (status === 400) {
+          alert(data);
+        } else if (status === 401) {
+          alert('Não autorizado');
+        } else if (status === 404) {
+          alert('Ponto de coleta não encontrado');
+        } else if (status === 409) {
+          alert(data);
+        } else if (status === 500) {
+          console.log('Erro interno do servidor');
+        }
       } else {
-        console.error("Erro ao configurar a solicitação:", error.message);
+        console.log('Erro na requisição:', error.message);
       }
     }
+  };
+
+  const handleToggleShowNewPassword = () => {
+    setData((prevState) => ({
+      ...prevState,
+      showNewPassword: !prevState.showNewPassword,
+    }));
   };
 
   return (
     <div className="cadastrar-usuario">
       <SidebarAdmin />
       <main>
-        <BoxTitleSection titulo={"Cadastrar Usuário"} />
+        <BoxTitleSection titulo={"Cadastrar usuário"} />
         <div>
           <div className="box-admin">
             <div className="title-box">
@@ -108,7 +114,7 @@ const CadastrarUsuario = () => {
                       type="text"
                       id="nome"
                       name="nome"
-                      value={dados.nome}
+                      value={data.nome}
                       onChange={handleChange}
                       required
                     />
@@ -121,7 +127,7 @@ const CadastrarUsuario = () => {
                       type="email"
                       id="email"
                       name="email"
-                      value={dados.email}
+                      value={data.email}
                       onChange={handleChange}
                       required
                     />
@@ -131,13 +137,24 @@ const CadastrarUsuario = () => {
                   <div>
                     <input
                       placeholder="Senha forte"
-                      type="text"
+                      type={data.showNewPassword ? "text" : "password"} 
                       id="senha"
                       name="senha"
-                      value={dados.senha}
+                      value={data.senha}
                       onChange={handleChange}
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={handleToggleShowNewPassword}
+                      className="icon-button"
+                    >
+                      {data.showNewPassword ? (
+                        <EyeClosed className="i-eye" /> 
+                      ) : (
+                        <Eye className="i-eye" /> 
+                      )}
+                    </button>
                   </div>
                 </div>
                 <div className="form-row">
@@ -145,7 +162,7 @@ const CadastrarUsuario = () => {
                     <select
                       id="tipo"
                       name="tipo"
-                      value={dados.tipo}
+                      value={data.tipo}
                       onChange={handleChange}
                       required
                     >
@@ -157,20 +174,20 @@ const CadastrarUsuario = () => {
                 </div>
                 <div className="form-row">
                   <div>
-                    {mostrarPontoColeta && (
+                    {showCollectPoint && (
                       <div className="form-row">
                         <div>
                           <select
                             id="pontoColetaId"
                             name="pontoColetaId"
-                            value={dados.pontoColetaId}
+                            value={data.pontoColetaId}
                             onChange={handleChange}
                             required
                           >
                             <option value="">
                               Selecione um ponto de coleta
                             </option>
-                            {pontosColeta.map((ponto) => (
+                            {collectionPoints.map((ponto) => (
                               <option key={ponto.id} value={ponto.id}>
                                 {ponto.nomePonto}
                               </option>
@@ -185,13 +202,13 @@ const CadastrarUsuario = () => {
                   Cadastrar
                 </button>
               </form>
-              {cadastroEfetuado && (
-                <div className="overlay" onClick={() => setCadastroEfetuado(false)}>
+              {registrationCompleted && (
+                <div className="overlay" onClick={() => setRegistrationCompleted(false)}>
                   <div className="mensagem-doacao-efetuada">
                     <p>CADASTRO EFETUADO COM SUCESSO!</p>
                     <span
                       className="fechar"
-                      onClick={() => setCadastroEfetuado(false)}
+                      onClick={() => setRegistrationCompleted(false)}
                     >
                       x
                     </span>

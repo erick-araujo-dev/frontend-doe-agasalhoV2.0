@@ -9,7 +9,8 @@ import CadastrarPontoColeta from "../pages/Admin/CadastrarPontoColeta";
 import EditarUsuario from "../pages/Admin/EditarUsuario";
 import CadastrarUsuario from "../pages/Admin/CadastrarUsuario";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
-import EditarUsername from "../pages/Admin/EditarUsername";
+import EditarUsername from "../pages/EditarUsername";
+import AlterarSenha from "../pages/AlterarSenha";
 
 
 
@@ -28,6 +29,7 @@ export default function AppRoute() {
         <Route exact path="/editarusuario" element={<EditarUsuario />} />
         <Route exact path="/cadastrarusuario" element={<CadastrarUsuario />} />
         <Route exact path="/editarnome" element={<EditarUsername />} />
+        <Route exact path="/alterarsenha" element={<AlterarSenha />} />
         <Route exact path="/unauthorized" element={<UnauthorizedPage />} />
       </Routes>
     </BrowserRouter>

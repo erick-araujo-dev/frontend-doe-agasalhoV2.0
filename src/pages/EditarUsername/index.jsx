@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import SidebarAdmin from "../../../components/SidebarAdmin";
-import axiosWithAuth from "../../../utils/axiosWithAuth";
-import BoxTitleSection from "../../../components/BoxTitleSection";
+import SidebarAdmin from "../../components/SidebarAdmin";
+import axiosWithAuth from "../../utils/axiosWithAuth";
+import BoxTitleSection from "../../components/BoxTitleSection";
 import { useNavigate } from "react-router-dom";
-import verifyAuthentication from "../../../utils/verifyAuthentication";
+import { verifyAuthenticationGeral } from "../../utils/verifyAuthentication";
 
 const EditarUsername = () => {
   const [username, setUsername] = useState("");
   const [registrationCompleted, setRegistrationCompleted] = useState(false);
   const navigate = useNavigate();
 
-  verifyAuthentication(); //verifica se o user esta autenticado
+  verifyAuthenticationGeral(); //verifica se o user esta autenticado
 
   useEffect(() => {
     const getAuthUser = async () => {
@@ -48,7 +48,7 @@ const EditarUsername = () => {
       setRegistrationCompleted(true);
     } catch (error) {
       if (error.response) {
-        alert(error.response.data);
+        console.error(error.response.data);
       } else if (error.request) {
         console.error("Erro ao fazer a solicitação:", error.request);
       } else {
@@ -58,7 +58,7 @@ const EditarUsername = () => {
   };
 
   const handleVoltar = () =>{
-    navigate("/homeadmin")
+    navigate(-1)
   }
   return (
     <div className="cadastrar-usuario">
