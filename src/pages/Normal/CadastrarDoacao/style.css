@@ -20,25 +20,47 @@
 .container-select-cadastro {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-evenly;
-    height: 450px;
-    padding-left: 10px;
+    align-items: center;
+    justify-content: space-around;
+    height: 350px;
+    width: 95%;
+    margin: auto;
+    margin-top: 20px;
 }
 
 .select-cadastro {
-    width: 95%;
+    width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 }
+
+
 
 .select-cadastro select,
 .select-cadastro input {
     width: 100%;
+    height: 35px;
+    background-color: var(--light-gray);
+    border-radius: 4px;
+    border: 1px solid var(--golden-rod);
+    margin: 0 5px;
+    font-size: 15px;
+    color: #3c3c3c;
+    padding-left: 10px;
 }
 
 .btn-cadastro {
-    justify-content: flex-end;
+    align-self: flex-end;
+    margin: 0 5px;
+    padding: 5px 10px;
+    background-color: var(--golden-rod);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 150px;
+    height: 35px;
+    font-weight: 600;
+    font-size: 16px;
 }
 
 .btn-cadastro button {
@@ -52,8 +74,9 @@
 .cadastrar-doacao .mensagem-doacao-efetuada {
     display: flex;
     flex-direction: column;
-    height: auto;
     padding: 20px;
+    height: 250px;
+    width: 600px;
 }
 
 .cadastrar-doacao table {
@@ -71,4 +94,19 @@
     padding: 10px;
     text-align: center;
     border: 1px solid rgba(124, 124, 124, 0.434);
+}
+
+/* Barra de scroll do select */
+.select-cadastro select::-webkit-scrollbar {
+    width: 8px;
+    background-color: #c4c4c4;
+}
+
+.select-cadastro select::-webkit-scrollbar-thumb {
+    background-color: var(--golden-rod);
+    border-radius: 10px;
+}
+
+.select-cadastro select::-webkit-scrollbar-thumb:hover {
+    background-color: var(--golden-rod);
 }

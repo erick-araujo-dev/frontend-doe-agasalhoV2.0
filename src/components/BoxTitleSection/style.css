@@ -35,11 +35,12 @@
     align-items: center;
     justify-content: space-around;
     height: 40px;
-    width: 150px;
+    width: auto;
 }
 
 .logo-nome p{
     font-size: 20px;
+    margin-right: 10px;
 }
 
 .box-perfil i{

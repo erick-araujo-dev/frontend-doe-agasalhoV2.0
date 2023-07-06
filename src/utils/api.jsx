@@ -47,6 +47,9 @@ export const getTypes = async (setTypes, size = "", gender = "", characteristic 
       const response = await axiosWithAuth().get(
         `http://localhost:5059/api/products/types?size=${size}&gender=${gender}&characteristic=${characteristic}`
       );
+    const types = response.data.$values || [];
+    const sortedTypes = types.sort((a, b) => a.nome.localeCompare(b.nome)); 
+    setTypes(sortedTypes);
       setTypes(response.data.$values);
     } catch (error) {
       console.error("Erro ao buscar os tipos:", error);
@@ -59,7 +62,9 @@ export const getSizes = async (setSizes, type = "", gender = "", characteristic 
       const response = await axiosWithAuth().get(
         `http://localhost:5059/api/products/sizes?type=${type}&gender=${gender}&characteristic=${characteristic}`
       );
-      setSizes(response.data.$values);
+    const sizes = response.data.$values || [];
+    const sortedSizes = sizes.sort((a, b) => a.nome.localeCompare(b.nome));
+      setSizes(sortedSizes);
     } catch (error) {
       console.error("Erro ao buscar os tamanhos:", error);
     }
@@ -72,7 +77,8 @@ export const getCharacteristics = async (setCharacteristics, type = "", size = "
       );
       const data = response.data;
       const values = data["$values"] || [];
-      setCharacteristics(values);
+      const sortedCharacteristic = values.sort((a, b) => a.localeCompare(b));
+      setCharacteristics(sortedCharacteristic);
     } catch (error) {
       console.error("Ocorreu um erro ao buscar as características:", error);
     }

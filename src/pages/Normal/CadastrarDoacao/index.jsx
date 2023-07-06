@@ -1,24 +1,14 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import SidebarUser from "../../../components/SidebarUser";
 import "./style.css";
 import BoxTitleSection from "../../../components/BoxTitleSection";
-import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
-import {
-  getCharacteristics,
-  getGenders,
-  getSizes,
-  getTypes,
-} from "../../../utils/api";
+import { getCharacteristics, getSizes, getTypes } from "../../../utils/api";
 
 const CadastrarDoacao = () => {
-  const [tamanhos, setTamanhos] = useState([]);
-  const [cadastroConfirmado, setCadastroConfirmado] = useState(false);
-  const [itemSelecionado, setItemSelecionado] = useState(null);
-  const [cadastroEfetuado, setCadastroEfetuado] = useState(false);
-  const navigate = useNavigate();
-
+  const [donationCompleted, setDonationCompleted] = useState(false);
+  const [itemSelected, setItemSelected] = useState(null);
+  const [registrationCompleted, setRegistrationCompleted] = useState(false);
   const [typeSelected, setType] = useState("");
   const [otherType, setOtherType] = useState(false);
   const [otherTypeValue, setOtherTypeValue] = useState("");
@@ -28,11 +18,11 @@ const CadastrarDoacao = () => {
   const [characteristicSelected, setCharacteristic] = useState("");
   const [otherCharacteristic, setOtherCharacteristic] = useState(false);
   const [otherCharacteristicValue, setOtherCharacteristicValue] = useState("");
-
-
   const [types, setTypes] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [characteristics, setCharacteristics] = useState([]);
+  const [amount, setAmount] = useState(1);
+
 
   useEffect(() => {
     const getValueById = (elementId) => {
@@ -47,7 +37,7 @@ const CadastrarDoacao = () => {
     getCharacteristics(setCharacteristics, type, size);
   }, []);
 
-  const handleOtherChange = (event, setValue, setOther) => {
+  const handleOtherChange = (event, setValue, setOther, setOtherValue) => {
     const { value } = event.target;
     if (value === "outro") {
       setValue("");
@@ -55,144 +45,107 @@ const CadastrarDoacao = () => {
     } else {
       setValue(value);
       setOther(false);
+      setOtherValue("");
     }
-  };
-  const handleTipoChange = (event) => {
-    const tipo = event.target.value;
-    if (tipo === "outro") {
-      setTipoOutro(true);
-    } else {
-      setTipoSelecionado(tipo);
-      setTipoOutro(false);
-    }
-  };
-
-  const handleSelectChange = (event) => {
-    const { id, value } = event.target;
-    const type = id === "tipo" ? value : document.getElementById("tipo").value;
-    if (id === "tipo") handleTipoChange(event);
-
-    const size = id === "tamanho" ? value : document.getElementById("tamanho").value;
-    const gender = id === "genero" ? value : document.getElementById("genero").value;
-    const characteristic = id === "caracteristica" ? value : document.getElementById("caracteristica").value;
-
-    getTypes(setTypes, size, gender, characteristic);
-    getSizes(setSizes, type, gender, characteristic);
-    getCharacteristics(setCharacteristics, type, size, gender);
-    getGenders(setGenders, type, size, characteristic);
   };
 
   const handleCadastrar = async () => {
-    const usuarioId = localStorage.getItem("usuarioId");
-    const tipo = document.getElementById("tipo").value;
-    const tamanho = document.getElementById("tamanho").value;
-    const genero = document.getElementById("genero").value;
-    const quantidade = parseInt(
-      document.getElementById("quantidade").value,
-      10
-    );
-
-    if (!tipo || !tamanho || !genero || !quantidade) {
-      alert("Preencha todos os campos!");
-      return;
-    }
-
-    if (parseInt(quantidade) < 1) {
-      alert("A quantidade deve ser maior ou igual a 1!");
-      return;
-    }
+    const type = otherType ? otherTypeValue : typeSelected;
+    const size = otherSize ? otherSizeValue : sizeSelected;
+    const characteristic = otherCharacteristic ? otherCharacteristicValue : characteristicSelected;
+    const gender = document.getElementById("genero").value;
 
     try {
-      await buscarProdutos(usuarioId, tipo, tamanho, genero, quantidade);
+      await getProducts(type, size, gender, characteristic);
     } catch (error) {
-      console.error("Ocorreu um erro ao buscar os produtos:", error);
+      console.log(type, size, characteristic, gender);
+      console.log(error);
     }
   };
 
-  const buscarProdutos = async (
-    usuarioId,
-    tipo,
-    tamanho,
-    genero,
-    quantidade
-  ) => {
-    const response = await axiosWithAuth().post(
-      "https://localhost:7243/api/produtos/buscar",
-      {
-        usuarioId: usuarioId,
-        tipo: tipo,
-        tamanho: tamanho,
-        genero: genero,
-      }
+  const getProducts = async (type, size, gender, characteristic) => {
+    const response = await axiosWithAuth().get(
+      `http://localhost:5059/api/products/filter?type=${type}&size=${size}&gender=${gender}&characteristic=${characteristic}`
     );
 
-    const resultados = response.data.$values || [];
-    if (resultados.length > 0) {
-      const produtoEncontrado = resultados[0];
+    const result = response.data.$values || [];
+    if (result.length > 0) {
+      const productFound = result[0];
       const item = {
-        usuarioId: usuarioId,
-        tipo: produtoEncontrado.tipo,
-        tamanho: produtoEncontrado.tamanho,
-        genero: produtoEncontrado.genero,
-        estoque: produtoEncontrado.estoque,
-        quantidade: parseInt(quantidade),
-        produtoId: produtoEncontrado.id,
+        tipo: productFound.tipo,
+        tamanho: productFound.tamanho,
+        genero: productFound.genero,
+        caracteristica: productFound.caracteristica,
+        estoque: productFound.estoque,
+        produtoId: productFound.id,
       };
 
-      setItemSelecionado(item);
-      setCadastroConfirmado(true);
-      setCadastroEfetuado(false);
+      setItemSelected(item);
+      setDonationCompleted(true);
+      setRegistrationCompleted(false);
     } else {
       console.log("Nenhum produto encontrado!");
-      await adicionarProduto(usuarioId, tipo, tamanho, genero, quantidade);
+      await createProduct(type, size, gender, characteristic);
     }
   };
 
-  const adicionarProduto = async (
-    usuarioId,
-    tipo,
-    tamanho,
-    genero,
-    quantidade
-  ) => {
+  const createProduct = async (type, size, gender, characteristic) => {
     try {
-      await axiosWithAuth().post(
-        "https://localhost:7243/api/produtos/adicionar",
-        {
-          usuarioId: usuarioId,
-          tipo: tipo,
-          tamanho: tamanho,
-          genero: genero,
-          estoque: 0,
-        }
+      const requestBody = {
+        tipo: type,
+        tamanho: size,
+        caracteristica: characteristic,
+        genero: gender,
+      };
+
+      const response = await axiosWithAuth().post(
+        "http://localhost:5059/api/products/create",
+        requestBody
       );
-      console.log("Novo produto adicionado com sucesso!");
-      await buscarProdutos(usuarioId, tipo, tamanho, genero, quantidade);
+
+      console.log(response.data);
+      await getProducts(type, size, gender, characteristic);
     } catch (error) {
-      console.error("Ocorreu um erro ao adicionar o novo produto:", error);
+      console.log(error);
     }
   };
 
-  const handleCancelarCadastro = () => {
-    setCadastroConfirmado(false);
-    setItemSelecionado(null);
+  const handleCancelRegistration = () => {
+    setDonationCompleted(false);
+    setItemSelected(null);
   };
 
-  const confirmarCadastro = async () => {
+  const confirmRegistration = async () => {
     try {
       const response = await axiosWithAuth().post(
-        "https://localhost:7243/api/doacoes/entradadoacao",
+        "http://localhost:5059/api/donations/inventory/entry",
         {
-          produtoId: itemSelecionado.produtoId,
-          quantidade: itemSelecionado.quantidade,
+          produtoId: itemSelected.produtoId,
+          quantidade: amount,
         }
       );
 
-      setCadastroConfirmado(false);
-      setCadastroEfetuado(true);
+      setDonationCompleted(false);
+      setRegistrationCompleted(true);
+      console.log(response.data);
+      console.log(itemSelected);
     } catch (error) {
-      console.error("Ocorreu um erro ao confirmar o cadastro:", error);
+      if (error.response) {
+        const { status, data } = error.response;
+        if (status === 400) {
+          alert(data);
+        } else if (status === 500) {
+          console.log('Erro interno do servidor');
+        }
+      } else {
+        console.log('Erro na requisição:', error.message);
+      }
     }
+  };
+
+  const handleCloseConfirmedDonation = () => {
+    setRegistrationCompleted(false);
+    window.location.reload();
   };
 
   return (
@@ -210,12 +163,12 @@ const CadastrarDoacao = () => {
           <div className="box-resultado">
             <div className="container-select-cadastro">
               <div className="select-cadastro">
-                <label htmlFor="tipo">Tipo:</label>
+                <label htmlFor="tipo"></label>
                 {otherType ? (
                   <input
                     type="text"
-                    id="otherType"
-                    placeholder="Digite o tipo"
+                    id="tipo"
+                    placeholder="DIGITE O TIPO"
                     value={otherTypeValue}
                     onChange={(e) => setOtherTypeValue(e.target.value)}
                   />
@@ -223,27 +176,36 @@ const CadastrarDoacao = () => {
                   <select
                     id="tipo"
                     value={typeSelected}
-                    onChange={(e) => handleOtherChange(e, setType, setOtherType)}
+                    onChange={(e) =>
+                      handleOtherChange(
+                        e,
+                        setType,
+                        setOtherType,
+                        setOtherTypeValue
+                      )
+                    }
                   >
-                    <option value="">Selecionar</option>
+                    <option value="">SELECIONE O TIPO</option>
                     {types.map((tipo) => (
-                      <option key={tipo.id} value={tipo.id}>
+                      <option key={tipo.id} value={tipo.nome}>
                         {tipo.nome}
                       </option>
                     ))}
-                    <option value="outro">Outro</option>
+                    <option value="outro">OUTRO</option>
                   </select>
                 )}
               </div>
               <div className="select-cadastro">
-                <label htmlFor="caracteristica">Estilo:</label>
+                <label htmlFor="caracteristica"></label>
                 {otherCharacteristic ? (
                   <input
                     type="text"
-                    id="otherCharacteristic"
-                    placeholder="Digite o estilo"
+                    id="caracteristica"
+                    placeholder="DIGITE O ESTILO"
                     value={otherCharacteristicValue}
-                    onChange={(e) => setOtherCharacteristicValue(e.target.value)}
+                    onChange={(e) =>
+                      setOtherCharacteristicValue(e.target.value)
+                    }
                   />
                 ) : (
                   <select
@@ -253,38 +215,61 @@ const CadastrarDoacao = () => {
                       handleOtherChange(
                         e,
                         setCharacteristic,
-                        setOtherCharacteristic
+                        setOtherCharacteristic,
+                        setOtherCharacteristicValue
                       )
                     }
                   >
-                    <option value="">Selecionar</option>
+                    <option value="">SELECIONE O ESTILO</option>
                     {characteristics.map((characteristic) => (
                       <option key={characteristic} value={characteristic}>
                         {characteristic}
                       </option>
                     ))}
-                    <option value="outro">Outro</option>
+                    <option value="outro">OUTRO</option>
                   </select>
                 )}
               </div>
               <div className="select-cadastro">
-                <label htmlFor="tamanho">Tamanho:</label>
-                <select id="tamanho" onChange={handleSelectChange}>
-                  <option value="">Selecionar</option>
-                  {sizes.map((size) => (
-                    <option value={size.id} key={size.id}>
-                      {size.nome}
-                    </option>
-                  ))}
-                </select>
+                <label htmlFor="tamanho"></label>
+                {otherSize ? (
+                  <input
+                    type="text"
+                    id="tamanho"
+                    placeholder="DIGITE O TAMANHO"
+                    value={otherSizeValue}
+                    onChange={(e) => setOtherSizeValue(e.target.value)}
+                  />
+                ) : (
+                  <select
+                    id="tamanho"
+                    value={sizeSelected}
+                    onChange={(e) =>
+                      handleOtherChange(
+                        e,
+                        setSize,
+                        setOtherSize,
+                        setOtherSizeValue
+                      )
+                    }
+                  >
+                    <option value="">SELECIONE O TAMANHO</option>
+                    {sizes.map((size) => (
+                      <option value={size.nome} key={size.id}>
+                        {size.nome}
+                      </option>
+                    ))}
+                    <option value="outro">OUTRO</option>
+                  </select>
+                )}
               </div>
               <div className="select-cadastro">
-                <label htmlFor="genero">Gênero:</label>
-                <select id="genero" onChange={handleSelectChange}>
-                  <option value="">Selecionar</option>
-                  <option value="M">Masculino</option>
-                  <option value="F">Feminino</option>
-                  <option value="U">Unissex</option>
+                <label htmlFor="genero"></label>
+                <select id="genero">
+                  <option value="">SELECIONE O GÊNERO</option>
+                  <option value="M">MASCULINO</option>
+                  <option value="F">FEMININO</option>
+                  <option value="U">UNISSEX</option>
                 </select>
               </div>
               <div className="select-cadastro btn-cadastro">
@@ -293,82 +278,99 @@ const CadastrarDoacao = () => {
                   className="btn-buscar-cadastrar"
                   onClick={handleCadastrar}
                 >
-                  Cadastrar
+                  CADASTRAR
                 </button>
               </div>
             </div>
-            {cadastroConfirmado && itemSelecionado && (
-              <div className="doacao-confirmada">
-                <h2>CONFIRMAR CADASTRO DE DOAÇÃO!</h2>
-                <p>Você está prestes a cadastrar o seguinte item:</p>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Tipo</th>
-                      <th>Tamanho</th>
-                      <th>Gênero</th>
-                      <th>Quantidade</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{itemSelecionado.tipo}</td>
-                      <td>{itemSelecionado.tamanho}</td>
-                      <td>
-                        {itemSelecionado.genero === "M"
-                          ? "Masculino"
-                          : itemSelecionado.genero === "F"
-                          ? "Feminino"
-                          : "Unissex"}
-                      </td>
-                      <td>{itemSelecionado.quantidade}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div className="select-cadastro">
-                  <label htmlFor="quantidade">Quantidade:</label>
-                  <input type="number" id="quantidade" defaultValue="1" />
+            <div className="container-doacao-confirmada">
+              {donationCompleted && itemSelected && (
+                <div className="overlay">
+                  <div className="doacao-confirmada">
+                    <h2>CONFIRMAR CADASTRO DE DOAÇÃO!</h2>
+                    <p>Você está prestes a cadastrar o seguinte item:</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Tipo</th>
+                          <th>Estilo</th>
+                          <th>Tamanho</th>
+                          <th>Gênero</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{itemSelected.tipo}</td>
+                          <td>{itemSelected.caracteristica}</td>
+                          <td>{itemSelected.tamanho}</td>
+                          <td>
+                            {itemSelected.genero === "M"
+                              ? "Masculino"
+                              : itemSelected.genero === "F"
+                                ? "Feminino"
+                                : "Unissex"}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div className="box-quantidade">
+                      <p>Quantidade: </p>
+                      <input
+                        type="number"
+                        value={amount}
+                        id="quantidade"
+                        onChange={(e) => setAmount(Number(e.target.value))}/>
+                    </div>
+                    <div className="botoes-confirmacao">
+                      <button onClick={handleCancelRegistration}>Cancelar</button>
+                      <button onClick={confirmRegistration}>Confirmar</button>
+                    </div>
+                  </div>
                 </div>
-                <div className="botoes-confirmacao">
-                  <button onClick={handleCancelarCadastro}>Cancelar</button>
-                  <button onClick={confirmarCadastro}>Confirmar</button>
+              )}
+              {registrationCompleted && (
+                <div className="overlay" onClick={handleCloseConfirmedDonation}>
+                  <div className="mensagem-doacao-efetuada">
+                    <p>ITEM ABAIXO CADASTRADO COM SUCESSO!</p>
+                    <div className="lista-resultado-busca">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Tipo</th>
+                            <th>Estilo</th>
+                            <th>Tamanho</th>
+                            <th>Gênero</th>
+                            <th>Estoque</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{itemSelected.tipo}</td>
+                            <td>{itemSelected.caracteristica}</td>
+                            <td>{itemSelected.tamanho}</td>
+                            <td>
+                              {itemSelected.genero === "M"
+                                ? "Masculino"
+                                : itemSelected.genero === "F"
+                                  ? "Feminino"
+                                  : "Unissex"}
+                            </td>
+                            <td>
+                              {amount + itemSelected.estoque}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <span
+                      className="fechar"
+                      onClick={handleCloseConfirmedDonation}
+                    >
+                      x
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )}
-            {cadastroEfetuado && (
-              <div className="mensagem-doacao-efetuada">
-                <p>ITEM ABAIXO CADASTRADO COM SUCESSO!</p>
-
-                <div className="lista-resultado-busca">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Tipo</th>
-                        <th>Tamanho</th>
-                        <th>Gênero</th>
-                        <th>Estoque Atual</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{itemSelecionado.tipo}</td>
-                        <td>{itemSelecionado.tamanho}</td>
-                        <td>
-                          {itemSelecionado.genero === "M"
-                            ? "Masculino"
-                            : itemSelecionado.genero === "F"
-                            ? "Feminino"
-                            : "Unissex"}
-                        </td>
-                        <td>
-                          {itemSelecionado.estoque + itemSelecionado.quantidade}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </main>

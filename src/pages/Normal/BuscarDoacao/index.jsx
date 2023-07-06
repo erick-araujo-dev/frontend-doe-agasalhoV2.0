@@ -2,24 +2,20 @@ import React, { useState, useEffect } from "react";
 import SidebarUser from "../../../components/SidebarUser";
 import "./style.css";
 import BoxTitleSection from "../../../components/BoxTitleSection";
-import { useNavigate } from "react-router-dom";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import { getCharacteristics, getGenders, getSizes, getTypes } from "../../../utils/api";
-import { handleAmountChange, handleIncrease, handleReduce } from "../../../utils/helpers";
 
 const BuscarDoacao = () => {
-  const [resultados, setResultados] = useState([]);
-  const [tamanhos, setTamanhos] = useState([]);
-  const [doacaoConfirmada, setDoacaoConfirmada] = useState(false);
-  const [itemSelecionado, setItemSelecionado] = useState(null);
-  const [doacaoEfetuada, setDoacaoEfetuada] = useState(false);
-  const [doacaoNaoEncontrada, setDoacaoNaoEncontrada] = useState(false);
-  const navigate = useNavigate();
-
+  const [results, setResults] = useState([]);
+  const [confirmedDonation, setConfirmedDonation] = useState(false);
+  const [itemSelected, setItemSelected] = useState(null);
+  const [donationCompleted, setDonationCompleted] = useState(false);
+  const [donationNotFound, setDonationNotFound] = useState(false);
   const [types, setTypes] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [characteristics, setCharacteristics] = useState([]);
   const [genders, setGenders] = useState([]);
+  const [amount, setAmount] = useState(1);
 
   useEffect(() => {
     const getValueById = (elementId) => {
@@ -51,7 +47,7 @@ const BuscarDoacao = () => {
   };
 
   const handleFetch = async () => {
-    setDoacaoEfetuada(false);
+    setDonationCompleted(false);
     const type = document.getElementById("tipo").value;
     const characteristic = document.getElementById("caracteristica").value;
     const size = document.getElementById("tamanho").value;
@@ -69,16 +65,16 @@ const BuscarDoacao = () => {
       );
 
       const products = response.data.$values || [];
-      setResultados(products);
-      setDoacaoConfirmada(false);
-      setItemSelecionado(null);
-      setDoacaoNaoEncontrada(products.length === 0);
+      setResults(products);
+      setConfirmedDonation(false);
+      setItemSelected(null);
+      setDonationNotFound(products.length === 0);
     } catch (error) {
       console.error("Ocorreu um erro ao buscar os produtos:", error);
     }
   };
 
-  const handleAtualizarEstoque = async () => {
+  const handleStockUpdate = async () => {
     const type = document.getElementById("tipo").value;
     const characteristic = document.getElementById("caracteristica").value;
     const size = document.getElementById("tamanho").value;
@@ -95,47 +91,46 @@ const BuscarDoacao = () => {
           "&characteristic=" + characteristic
       );
 
-      setResultados(response.data.$values || []);
-      setDoacaoConfirmada(false);
-      setItemSelecionado(null);
+      setResults(response.data.$values || []);
+      setConfirmedDonation(false);
+      setItemSelected(null);
     } catch (error) {
       console.error("Ocorreu um erro ao buscar os produtos:", error);
     }
   };
 
-  const handleDoar = (item) => {
+  const handleDonate = (item) => {
     if (item.estoque < 1) {
       alert("Não há estoque disponível para esta doação.");
       return;
     }
 
-    setItemSelecionado(item);
-    setDoacaoConfirmada(true);
-    setDoacaoEfetuada(false);
+    setItemSelected(item);
+    setConfirmedDonation(true);
+    setDonationCompleted(false);
   };
 
-  const handleCancelarDoacao = () => {
-    setDoacaoConfirmada(false);
-    setItemSelecionado(null);
+  const handleCancelDonate = () => {
+    setConfirmedDonation(false);
+    setItemSelected(null);
   };
 
-  const handleConfirmarDoacao = async () => {
+  const handleConfirmDonate = async () => {
     try {
       const response = await axiosWithAuth().post(
         "http://localhost:5059/api/donations/inventory/exit",
         {
-          produtoId: itemSelecionado.id,
-          quantidade: itemSelecionado.quantidade
+          produtoId: itemSelected.id,
+          quantidade: amount
         }
 
       );
 
-      setDoacaoConfirmada(false);
-      setItemSelecionado(null);
-      setDoacaoEfetuada(true);
-
-      handleAtualizarEstoque();
-    } catch (error) {
+      setConfirmedDonation(false);
+      setItemSelected(null);
+      setDonationCompleted(true);
+      handleStockUpdate();
+        } catch (error) {
       if (error.response) {
         const { status, data } = error.response;
         if (status === 400) {
@@ -216,61 +211,63 @@ const BuscarDoacao = () => {
             <p>Resultado:</p>
           </div>
           <div className="lista-resultado-busca">
-            {doacaoNaoEncontrada ? (
+            {donationNotFound ? (
               <div className="doacao-nao-encontrada">
                 <p>Item indisponível em estoque!</p>
               </div>
             ) : (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Tipo</th>
-                    <th>Estilo</th>
-                    <th>Tamanho</th>
-                    <th>Gênero</th>
-                    <th>Estoque</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {resultados.map((item) => (
-                    <tr
-                      key={item.$id}
-                      className={item.estoque === 0 ? "out-of-stock" : ""}
-                    >
-                      <td>{item.tipo}</td>
-                      <td>{item.caracteristica}</td>
-                      <td>{item.tamanho}</td>
-                      <td>
-                        {item.genero === "M"
-                          ? "Masculino"
-                          : item.genero === "F"
-                          ? "Feminino"
-                          : "Unissex"}
-                      </td>
-                      <td>{item.estoque}</td>
-                      <td>
-                        {item.estoque === 0 ? (
-                          <button className="btn-doar" disabled>
-                            Indisponível
-                          </button>
-                        ) : (
-                          <button
-                            className="btn-doar"
-                            onClick={() => handleDoar(item)}
-                          >
-                            Doar
-                          </button>
-                        )}
-                      </td>
+              <div className="container-table">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Tipo</th>
+                      <th>Estilo</th>
+                      <th>Tamanho</th>
+                      <th>Gênero</th>
+                      <th>Estoque</th>
+                      <th></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {results.map((item) => (
+                      <tr
+                        key={item.$id}
+                        className={item.estoque === 0 ? "out-of-stock" : ""}
+                      >
+                        <td>{item.tipo}</td>
+                        <td>{item.caracteristica}</td>
+                        <td>{item.tamanho}</td>
+                        <td>
+                          {item.genero === "M"
+                            ? "Masculino"
+                            : item.genero === "F"
+                            ? "Feminino"
+                            : "Unissex"}
+                        </td>
+                        <td>{item.estoque}</td>
+                        <td>
+                          {item.estoque === 0 ? (
+                            <button className="btn-doar" disabled>
+                              Indisponível
+                            </button>
+                          ) : (
+                            <button
+                              className="btn-doar"
+                              onClick={() => handleDonate(item)}
+                            >
+                              Doar
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
           <div className="container-doacao-confirmada">
-            {doacaoConfirmada && itemSelecionado && (
+            {confirmedDonation && itemSelected && (
               <div className="overlay">
                 <div className="doacao-confirmada">
                   <h2>CONFIRMAR DOAÇÃO</h2>
@@ -287,17 +284,17 @@ const BuscarDoacao = () => {
                     </thead>
                     <tbody>
                       <tr>
-                        <td>{itemSelecionado.tipo}</td>
-                        <td>{itemSelecionado.caracteristica}</td>
-                        <td>{itemSelecionado.tamanho}</td>
+                        <td>{itemSelected.tipo}</td>
+                        <td>{itemSelected.caracteristica}</td>
+                        <td>{itemSelected.tamanho}</td>
                         <td>
-                          {itemSelecionado.genero === "M"
+                          {itemSelected.genero === "M"
                             ? "Masculino"
-                            : itemSelecionado.genero === "F"
+                            : itemSelected.genero === "F"
                             ? "Feminino"
                             : "Unissex"}
                         </td>
-                        <td>{itemSelecionado.estoque}</td>
+                        <td>{itemSelected.estoque}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -305,34 +302,26 @@ const BuscarDoacao = () => {
                     <p>Quantidade: </p>
                     <input
                       type="number"
-                      value={itemSelecionado.quantidade}
+                      value={amount}
                       id="quantidade"
-                      defaultValue={1}
-                      onChange={(e) => {
-                        const valor = parseInt(e.target.value, 10);
-                        if (valor < 1) {
-                          e.target.value = 1;
-                        }
-                        setItemSelecionado({ ...itemSelecionado, quantidade: valor });
-                      }
-                    }
+                      onChange={(e) => setAmount(Number(e.target.value))}
                     />
                   </div>
 
                   <div className="botoes-confirmacao">
-                    <button onClick={handleCancelarDoacao}>Cancelar</button>
-                    <button onClick={handleConfirmarDoacao}>Confirmar</button>
+                    <button onClick={handleCancelDonate}>Cancelar</button>
+                    <button onClick={handleConfirmDonate}>Confirmar</button>
                   </div>
                 </div>
               </div>
             )}
-            {doacaoEfetuada && (
-              <div className="overlay" onClick={() => setDoacaoEfetuada(false)}>
+            {donationCompleted && (
+              <div className="overlay" onClick={() => setDonationCompleted(false)}>
                 <div className="mensagem-doacao-efetuada">
                   <p>DOAÇÃO EFETUADA COM SUCESSO!</p>
                   <span
                     className="fechar"
-                    onClick={() => setDoacaoEfetuada(false)}
+                    onClick={() => setDonationCompleted(false)}
                   >
                     x
                   </span>

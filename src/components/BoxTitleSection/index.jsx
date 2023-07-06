@@ -41,9 +41,7 @@ const BoxTitleSection = ({ titulo }) => {
       <div className="box-perfil" onClick={handlePerfilClick}>
         <div className="logo-nome">
           <p>
-            {usuarioNome && usuarioNome.length > 9
-              ? `${usuarioNome.slice(0, 10)}...`
-              : usuarioNome}
+          {usuarioNome && usuarioNome.split(" ")[0]}
           </p>
           <i>
             <UserCircle />
