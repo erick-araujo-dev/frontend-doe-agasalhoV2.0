@@ -243,3 +243,7 @@ button, a{
   color: var(--white-smoke);
   font-size: 28px;
 }
+
+.capitalize{
+  text-transform: capitalize;
+}

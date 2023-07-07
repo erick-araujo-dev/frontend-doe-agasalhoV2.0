@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
-import SidebarUser from "../../../components/SidebarUser";
+import SidebarUser from "../../../components/SidebarNormal";
 import "./style.css";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
-import { getCharacteristics, getGenders, getSizes, getTypes } from "../../../utils/api";
+import {
+  getCharacteristics,
+  getGenders,
+  getSizes,
+  getTypes,
+} from "../../../utils/api";
 import { verifyAuthenticationNormal } from "../../../utils/verifyAuthentication";
 import { Pencil } from "phosphor-react";
 import FormEditarProduto from "../../../components/FormEditarProduto";
@@ -18,7 +23,9 @@ const BuscarDoacao = () => {
   const [sizes, setSizes] = useState([]);
   const [characteristics, setCharacteristics] = useState([]);
   const [genders, setGenders] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [displayForm, setDisplayForm] = useState(false);
+
   const [amount, setAmount] = useState(1);
 
   verifyAuthenticationNormal();
@@ -42,10 +49,15 @@ const BuscarDoacao = () => {
   const handleSelectChange = (event) => {
     const { id, value } = event.target;
     const type = id === "tipo" ? value : document.getElementById("tipo").value;
-    const size = id === "tamanho" ? value : document.getElementById("tamanho").value;
-    const gender = id === "genero" ? value : document.getElementById("genero").value;
-    const characteristic = id === "caracteristica" ? value : document.getElementById("caracteristica").value;
-  
+    const size =
+      id === "tamanho" ? value : document.getElementById("tamanho").value;
+    const gender =
+      id === "genero" ? value : document.getElementById("genero").value;
+    const characteristic =
+      id === "caracteristica"
+        ? value
+        : document.getElementById("caracteristica").value;
+
     getTypes(setTypes, size, gender, characteristic);
     getSizes(setSizes, type, gender, characteristic);
     getCharacteristics(setCharacteristics, type, size, gender);
@@ -62,12 +74,13 @@ const BuscarDoacao = () => {
     try {
       const response = await axiosWithAuth().get(
         "http://localhost:5059/api/products?type=" +
-          type  +
+          type +
           "&size=" +
           size +
           "&gender=" +
           gender +
-          "&characteristic=" + characteristic
+          "&characteristic=" +
+          characteristic
       );
 
       const products = response.data.$values || [];
@@ -89,12 +102,13 @@ const BuscarDoacao = () => {
     try {
       const response = await axiosWithAuth().get(
         "http://localhost:5059/api/products?type=" +
-          type  +
+          type +
           "&size=" +
           size +
           "&gender=" +
           gender +
-          "&characteristic=" + characteristic
+          "&characteristic=" +
+          characteristic
       );
 
       setResults(response.data.$values || []);
@@ -127,27 +141,32 @@ const BuscarDoacao = () => {
         "http://localhost:5059/api/donations/inventory/exit",
         {
           produtoId: itemSelected.id,
-          quantidade: amount
+          quantidade: amount,
         }
-
       );
 
       setConfirmedDonation(false);
       setItemSelected(null);
       setDonationCompleted(true);
       handleStockUpdate();
-        } catch (error) {
+    } catch (error) {
       if (error.response) {
         const { status, data } = error.response;
         if (status === 400) {
           alert(data);
         } else if (status === 500) {
-          console.log('Erro interno do servidor');
+          console.log("Erro interno do servidor");
         }
       } else {
-        console.log('Erro na requisição:', error.message);
+        console.log("Erro na requisição:", error.message);
       }
     }
+  };
+
+  const editProduct = (id) => {
+    const productFound = results.find((p) => p.id === id);
+    setSelectedProduct(productFound);
+    setDisplayForm(true);
   };
 
   return (
@@ -220,137 +239,178 @@ const BuscarDoacao = () => {
             />
           ) : (
             <React.Fragment>
-          <div className="box-header-busca-cadastro">
-            <p>Resultado:</p>
-          </div>
-          <div className="lista-resultado-busca">
-            {donationNotFound ? (
-              <div className="doacao-nao-encontrada">
-                <p>Item indisponível em estoque!</p>
+              <div className="box-header-busca-cadastro">
+                <p>Resultado:</p>
               </div>
-            ) : (
-              <div className="container-table">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Tipo</th>
-                      <th>Estilo</th>
-                      <th>Tamanho</th>
-                      <th>Gênero</th>
-                      <th>Estoque</th>
-                      <th>Editar</th>
-                      <th>Doar</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.map((item) => (
-                      <tr
-                        key={item.$id}
-                        className={item.estoque === 0 ? "out-of-stock" : ""}
-                      >
-                        <td>{item.tipo}</td>
-                        <td>{item.caracteristica}</td>
-                        <td>{item.tamanho}</td>
-                        <td>
-                          {item.genero === "M"
-                            ? "Masculino"
-                            : item.genero === "F"
-                            ? "Feminino"
-                            : "Unissex"}
-                        </td>
-                        <td>{item.estoque}</td>
-                        <td>
-                        <Pencil
+              <div className="lista-resultado-busca">
+                {donationNotFound ? (
+                  <div className="doacao-nao-encontrada">
+                    <p>Item indisponível em estoque!</p>
+                  </div>
+                ) : (
+                  <div className="container-table">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Tipo</th>
+                          <th>Estilo</th>
+                          <th>Tamanho</th>
+                          <th>Gênero</th>
+                          <th>Estoque</th>
+                          <th>Doar</th>
+                          <th>Editar</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* {results.map((item) => {
+                          if (item.estoque > 0) {
+                            return (
+                              <tr
+                                key={item.$id}
+                                className={
+                                  item.estoque === 0 ? "out-of-stock" : ""
+                                }
+                              >
+                                <td>{item.tipo}</td>
+                                <td>{item.caracteristica}</td>
+                                <td>{item.tamanho}</td>
+                                <td>
+                                  {item.genero === "M"
+                                    ? "Masculino"
+                                    : item.genero === "F"
+                                    ? "Feminino"
+                                    : "Unissex"}
+                                </td>
+                                <td>{item.estoque}</td>
+                                <td>
+                                  <button
+                                    className="btn-doar"
+                                    onClick={() => handleDonate(item)}
+                                  >
+                                    Doar
+                                  </button>
+                                </td>
+                                <td>
+                                  <Pencil
+                                    className="icon-edit-delete"
+                                    onClick={() => editProduct(item.id)}
+                                  />
+                                </td>
+                              </tr>
+                            );
+                          }
+                          return null;
+                        })} */}
+                        {results.map((item) => (
+                          <tr
+                            key={item.$id}
+                            className={item.estoque === 0 ? "out-of-stock" : ""}
+                          >
+                            <td>{item.tipo}</td>
+                            <td>{item.caracteristica}</td>
+                            <td>{item.tamanho}</td>
+                            <td>
+                              {item.genero === "M"
+                                ? "Masculino"
+                                : item.genero === "F"
+                                ? "Feminino"
+                                : "Unissex"}
+                            </td>
+                            <td>{item.estoque}</td>
+                            <td>
+                              {item.estoque === 0 ? (
+                                <button className="btn-doar" disabled>
+                                  Esgotado
+                                </button>
+                              ) : (
+                                <button
+                                  className="btn-doar"
+                                  onClick={() => handleDonate(item)}
+                                >
+                                  Doar
+                                </button>
+                              )}
+                            </td>
+                            <td>
+                              <Pencil
                                 className="icon-edit-delete"
                                 onClick={() => editProduct(item.id)}
                               />
-                        </td>
-                        <td>
-                          {item.estoque === 0 ? (
-                            <button className="btn-doar" disabled>
-                              Indisponível
-                            </button>
-                          ) : (
-                            <button
-                              className="btn-doar"
-                              onClick={() => handleDonate(item)}
-                            >
-                              Doar
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-          <div className="container-doacao-confirmada">
-            {confirmedDonation && itemSelected && (
-              <div className="overlay">
-                <div className="doacao-confirmada">
-                  <h2>CONFIRMAR DOAÇÃO</h2>
-                  <p>Você está prestes a doar o seguinte item:</p>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Tipo</th>
-                        <th>Estilo</th>
-                        <th>Tamanho</th>
-                        <th>Gênero</th>
-                        <th>Estoque</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{itemSelected.tipo}</td>
-                        <td>{itemSelected.caracteristica}</td>
-                        <td>{itemSelected.tamanho}</td>
-                        <td>
-                          {itemSelected.genero === "M"
-                            ? "Masculino"
-                            : itemSelected.genero === "F"
-                            ? "Feminino"
-                            : "Unissex"}
-                        </td>
-                        <td>{itemSelected.estoque}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div className="box-quantidade">
-                    <p>Quantidade: </p>
-                    <input
-                      type="number"
-                      value={amount}
-                      id="quantidade"
-                      onChange={(e) => setAmount(Number(e.target.value))}
-                    />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
+                )}
+              </div>
+              <div className="container-doacao-confirmada">
+                {confirmedDonation && itemSelected && (
+                  <div className="overlay">
+                    <div className="doacao-confirmada">
+                      <h2>CONFIRMAR DOAÇÃO</h2>
+                      <p>Você está prestes a doar o seguinte item:</p>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Tipo</th>
+                            <th>Estilo</th>
+                            <th>Tamanho</th>
+                            <th>Gênero</th>
+                            <th>Estoque</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{itemSelected.tipo}</td>
+                            <td>{itemSelected.caracteristica}</td>
+                            <td>{itemSelected.tamanho}</td>
+                            <td>
+                              {itemSelected.genero === "M"
+                                ? "Masculino"
+                                : itemSelected.genero === "F"
+                                ? "Feminino"
+                                : "Unissex"}
+                            </td>
+                            <td>{itemSelected.estoque}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div className="box-quantidade">
+                        <p>Quantidade: </p>
+                        <input
+                          type="number"
+                          value={amount}
+                          id="quantidade"
+                          onChange={(e) => setAmount(Number(e.target.value))}
+                        />
+                      </div>
 
-                  <div className="botoes-confirmacao">
-                    <button onClick={handleCancelDonate}>Cancelar</button>
-                    <button onClick={handleConfirmDonate}>Confirmar</button>
+                      <div className="botoes-confirmacao">
+                        <button onClick={handleCancelDonate}>Cancelar</button>
+                        <button onClick={handleConfirmDonate}>Confirmar</button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
-            {donationCompleted && (
-              <div className="overlay" onClick={() => setDonationCompleted(false)}>
-                <div className="mensagem-doacao-efetuada">
-                  <p>DOAÇÃO EFETUADA COM SUCESSO!</p>
-                  <span
-                    className="fechar"
+                )}
+                {donationCompleted && (
+                  <div
+                    className="overlay"
                     onClick={() => setDonationCompleted(false)}
                   >
-                    x
-                  </span>
-                </div>
+                    <div className="mensagem-doacao-efetuada">
+                      <p>DOAÇÃO EFETUADA COM SUCESSO!</p>
+                      <span
+                        className="fechar"
+                        onClick={() => setDonationCompleted(false)}
+                      >
+                        x
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          </React.Fragment>
-
+            </React.Fragment>
           )}
         </div>
       </main>

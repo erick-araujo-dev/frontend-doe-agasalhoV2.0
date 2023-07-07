@@ -9,9 +9,11 @@ import CadastrarPontoColeta from "../pages/Admin/CadastrarPontoColeta";
 import EditarUsuario from "../pages/Admin/EditarUsuario";
 import CadastrarUsuario from "../pages/Admin/CadastrarUsuario";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
-import EditarUsername from "../pages/EditarUsername";
-import AlterarSenha from "../pages/AlterarSenha";
 import RelatorioDoacoes from "../pages/Admin/RelatorioDoacoes";
+import EditarUsernameNormal from "../pages/Normal/EditarUsernameNormal";
+import EditarUsernameAdmin from "../pages/Admin/EditarUsernameAdmin";
+import AlterarSenhaNormal from "../pages/Normal/AlterarSenhaNormal";
+import AlterarSenhaAdmin from "../pages/Admin/AlterarSenhaAdmin";
 
 
 
@@ -30,8 +32,10 @@ export default function AppRoute() {
         <Route exact path="/editarusuario" element={<EditarUsuario />} />
         <Route exact path="/cadastrarusuario" element={<CadastrarUsuario />} />
         <Route exact path="/relatoriodoacoes" element={<RelatorioDoacoes />} />
-        <Route exact path="/editarnome" element={<EditarUsername />} />
-        <Route exact path="/alterarsenha" element={<AlterarSenha />} />
+        <Route exact path="/editarnomenormal" element={<EditarUsernameNormal />} />
+        <Route exact path="/editarnomeadmin" element={<EditarUsernameAdmin />} />
+        <Route exact path="/alterarsenhanormal" element={<AlterarSenhaNormal />} />
+        <Route exact path="/alterarsenhaadmin" element={<AlterarSenhaAdmin />} />
         <Route exact path="/unauthorized" element={<UnauthorizedPage />} />
       </Routes>
     </BrowserRouter>

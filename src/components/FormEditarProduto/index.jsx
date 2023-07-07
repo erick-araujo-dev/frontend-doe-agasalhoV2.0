@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosWithAuth from "../../utils/axiosWithAuth";
-import "./style.css"
 
 const FormEditarProduto = ({ produto, mostrarFormulario }) => {
   const [formData, setFormData] = useState({
@@ -23,22 +22,38 @@ const FormEditarProduto = ({ produto, mostrarFormulario }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axiosWithAuth().put(
-        `http://localhost:5059/api/products/${produto.id}/updateproduct`,
-        formData
-      );
-      mostrarFormulario();
-      window.location.reload();
-    } catch (error) {
-      if (error.response) {
-        alert(error.response.data)
-      } else if (error.request) {
-        console.error("Erro ao fazer a solicitação:", error.request);
-      } else {
-        console.error("Erro ao configurar a solicitação:", error.message);
-      }
+    try
+    {const response = await axiosWithAuth().get(
+      `http://localhost:5059/api/products/filter?type=${produto.tipo}&size=${produto.tamanho}&gender=${produto.genero}&characteristic=${produto.caracteristica}`
+    ); 
+    const result = response.data.$values || [];
+    console.log(result)
+    if (result.length > 1) {
+      alert("Erro: Já existe produto cadastrado com a mesma descrição.")
+    } 
+    else{
+      try {
+          const response = await axiosWithAuth().put(
+            `http://localhost:5059/api/products/${produto.id}/updateproduct`,
+            formData
+          );
+          mostrarFormulario();
+          window.location.reload();
+        } catch (error) {
+          if (error.response) {
+            alert(error.response.data)
+          } else if (error.request) {
+            console.error("Erro ao fazer a solicitação:", error.request);
+          } else {
+            console.error("Erro ao configurar a solicitação:", error.message);
+          }
+        }
     }
+  }
+  catch (error) {
+    console.error("Erro ao atualizar o produto:", error);
+  }
+
   };
 
   const handleCancelar = () => {
@@ -93,18 +108,15 @@ const FormEditarProduto = ({ produto, mostrarFormulario }) => {
                 </div>
                 <div className="form-row">
                   <div>
-                  <input
-                      placeholder="Gênero"
-                      type="text"
-                      name="genero"
-                      value={formData.genero === "M"
-                      ? "Masculino"
-                      : item.genero === "F"
-                      ? "Feminino"
-                      : "Unissex"}
-                      onChange={handleChange}
-                      required
-                    />
+                    <select id="genero"
+                    name="genero"
+                    value={formData.genero}
+                    onChange={handleChange}
+                    >
+                      <option value="M">MASCULINO</option>
+                      <option value="F">FEMININO</option>
+                      <option value="U">UNISSEX</option>
+                    </select>
                   </div>
                 </div>
                 <div className="btn-editar-voltar">

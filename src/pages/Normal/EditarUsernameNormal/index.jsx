@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import SidebarAdmin from "../../components/SidebarAdmin";
-import axiosWithAuth from "../../utils/axiosWithAuth";
-import BoxTitleSection from "../../components/BoxTitleSection";
+import axiosWithAuth from "../../../utils/axiosWithAuth";
+import BoxTitleSection from "../../../components/BoxTitleSection";
 import { useNavigate } from "react-router-dom";
-import { verifyAuthenticationGeral } from "../../utils/verifyAuthentication";
+import { verifyAuthenticationNormal } from "../../../utils/verifyAuthentication";
+import SideBarNormal from "../../../components/SidebarNormal";
 
-const EditarUsername = () => {
+const EditarUsernameNormal = () => {
   const [username, setUsername] = useState("");
   const [registrationCompleted, setRegistrationCompleted] = useState(false);
   const navigate = useNavigate();
 
-  verifyAuthenticationGeral(); //verifica se o user esta autenticado
+  verifyAuthenticationNormal(); //verifica se o user esta autenticado
 
   useEffect(() => {
     const getAuthUser = async () => {
@@ -57,12 +57,17 @@ const EditarUsername = () => {
     }
   };
 
-  const handleVoltar = () =>{
+  const handleBack = () =>{
     navigate(-1)
+  }
+
+  const handleCloseSucess = () => {
+    setRegistrationCompleted(false);
+    window.location.reload();
   }
   return (
     <div className="cadastrar-usuario">
-      <SidebarAdmin />
+      <SideBarNormal />
       <main>
         <BoxTitleSection titulo={"Editar dados"} />
         <div>
@@ -84,7 +89,7 @@ const EditarUsername = () => {
                   </div>
                 </div>
                 <div className="btn-editar-voltar">
-                  <button className="btn-cadastrar-usuario" onClick={handleVoltar}>
+                  <button className="btn-cadastrar-usuario" onClick={handleBack}>
                     Voltar
                   </button>
                   <button className="btn-cadastrar-usuario" type="submit">
@@ -94,12 +99,12 @@ const EditarUsername = () => {
               </form>
             </div>
             {registrationCompleted && (
-                <div className="overlay" onClick={() => setRegistrationCompleted(false)}>
+                <div className="overlay" onClick={() => handleCloseSucess()}>
                   <div className="mensagem-doacao-efetuada">
                     <p>NOME ALTERADO COM SUCESSO!</p>
                     <span
                       className="fechar"
-                      onClick={() => setRegistrationCompleted(false)}
+                      onClick={() => handleCloseSucess()}
                     >
                       x
                     </span>
@@ -113,4 +118,4 @@ const EditarUsername = () => {
   );
 };
 
-export default EditarUsername;
+export default EditarUsernameNormal;

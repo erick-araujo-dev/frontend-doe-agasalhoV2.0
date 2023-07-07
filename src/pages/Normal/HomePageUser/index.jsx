@@ -1,4 +1,4 @@
-import SidebarUser from '../../../components/SidebarUser';
+import SidebarUser from '../../../components/SidebarNormal';
 import logo_home from "../../../assets/images/logo-doe-agasalho.png";
 import { verifyAuthenticationNormal } from '../../../utils/verifyAuthentication';
 import BoxTitleSection from '../../../components/BoxTitleSection';

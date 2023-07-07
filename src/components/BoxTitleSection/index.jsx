@@ -9,6 +9,8 @@ import axiosWithAuth from "../../utils/axiosWithAuth";
 const BoxTitleSection = ({ titulo }) => {
   const [mostrarOpcoes, setMostrarOpcoes] = useState(false);
   const [usuarioNome, setUsuarioNome] = useState("");
+  const [editarnomeEndpoint, setEditarnomeEndpoint] = useState("");
+  const [alterarsenhaEndpoint, setAlterarsenhaEndpoint] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +21,10 @@ const BoxTitleSection = ({ titulo }) => {
         );
         const nomeUsuario = response.data.nome;
         setUsuarioNome(nomeUsuario);
+
+        const usuarioTipo = localStorage.getItem("usuarioTipo");
+        setEditarnomeEndpoint(usuarioTipo === "admin" ? "/editarnomeadmin" : "/editarnomenormal");
+        setAlterarsenhaEndpoint(usuarioTipo === "admin" ? "/alterarsenhaadmin" : "/alterarsenhanormal");
       } catch (error) {
         console.error("Erro ao buscar usuário:", error);
       }
@@ -49,8 +55,8 @@ const BoxTitleSection = ({ titulo }) => {
         </div>
         {mostrarOpcoes && (
           <div className="opcoes-perfil">
-            <Link to="/editarnome">Editar Nome</Link>
-            <Link to="/alterarsenha">Alterar Senha</Link>
+            <Link to={editarnomeEndpoint}>Editar Nome</Link>
+            <Link to={alterarsenhaEndpoint}>Alterar Senha</Link>
             <button onClick={handleLogoutClick}>Sair do Sistema</button>
           </div>
         )}

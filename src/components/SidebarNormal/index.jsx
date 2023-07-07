@@ -3,7 +3,7 @@ import { House, PlusCircle, MagnifyingGlass, SignOut } from "phosphor-react";
 import { Link,  useNavigate } from "react-router-dom";
 import { handleLogout } from "../../utils/helpers";
 
-const SidebarUSer = () => {
+const SideBarNormal = () => {
     const navigate = useNavigate();
     
     const handleLogoutClick = () => {
@@ -74,4 +74,4 @@ const SidebarUSer = () => {
     );
 };
 
-export default SidebarUSer;
+export default SideBarNormal;

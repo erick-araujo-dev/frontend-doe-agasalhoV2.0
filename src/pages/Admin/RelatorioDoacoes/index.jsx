@@ -4,6 +4,7 @@ import SidebarAdmin from "../../../components/SidebarAdmin";
 import "./style.css";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import { printReport } from "../../../components/Print/printReportDonation";
+import { verifyAuthenticationAdmin } from "../../../utils/verifyAuthentication";
 
 const RelatorioDoacoes = () => {
   const [collectPoints, setCollectPoints] = useState([]);
@@ -11,6 +12,8 @@ const RelatorioDoacoes = () => {
   const [results, setResults] = useState([]);
   const [selectedMonthYear, setSelectedMonthYear] = useState("");
   const containerRef = useRef(null);
+
+  verifyAuthenticationAdmin();
 
   useEffect(() => {
     const collectPoint = document.getElementById("ponto-coleta").value;
@@ -175,7 +178,7 @@ const RelatorioDoacoes = () => {
                 value={selectedMonthYear}
                 onChange={(e) => setSelectedMonthYear(e.target.value)}
               >
-                <option value="">Selecione o período</option>
+                <option value="">Selecione Período</option>
                 {generateMonthOptions()}
               </select>
             </div>
@@ -193,9 +196,9 @@ const RelatorioDoacoes = () => {
             </div>
             <div className="container-table">
               <table className="table-editar-usuario" ref={containerRef}>
-                <thead>
+                <thead >
                   <tr>
-                    <th>Unidade</th>
+                    <th >Unidade</th>
                     <th>Tipo</th>
                     <th>Tam.</th>
                     <th>Estilo</th>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import SidebarUser from "../../../components/SidebarUser";
+import SidebarUser from "../../../components/SidebarNormal";
 import "./style.css";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
@@ -168,14 +168,16 @@ const CadastrarDoacao = () => {
                 <label htmlFor="tipo"></label>
                 {otherType ? (
                   <input
+                  className="capitalize" 
                     type="text"
                     id="tipo"
-                    placeholder="DIGITE O TIPO"
+                    placeholder="Digite Tipo"
                     value={otherTypeValue}
                     onChange={(e) => setOtherTypeValue(e.target.value)}
                   />
                 ) : (
                   <select
+                  className="capitalize" 
                     id="tipo"
                     value={typeSelected}
                     onChange={(e) =>
@@ -187,13 +189,13 @@ const CadastrarDoacao = () => {
                       )
                     }
                   >
-                    <option value="">SELECIONE O TIPO</option>
+                    <option value="">Selecione Tipo</option>
                     {types.map((tipo) => (
                       <option key={tipo.id} value={tipo.nome}>
                         {tipo.nome}
                       </option>
                     ))}
-                    <option value="outro">OUTRO</option>
+                    <option value="outro">Outro</option>
                   </select>
                 )}
               </div>
@@ -201,9 +203,10 @@ const CadastrarDoacao = () => {
                 <label htmlFor="caracteristica"></label>
                 {otherCharacteristic ? (
                   <input
+                  className="capitalize" 
                     type="text"
                     id="caracteristica"
-                    placeholder="DIGITE O ESTILO"
+                    placeholder="Digite Estilo"
                     value={otherCharacteristicValue}
                     onChange={(e) =>
                       setOtherCharacteristicValue(e.target.value)
@@ -211,6 +214,7 @@ const CadastrarDoacao = () => {
                   />
                 ) : (
                   <select
+                  className="capitalize" 
                     id="caracteristica"
                     value={characteristicSelected}
                     onChange={(e) =>
@@ -222,13 +226,13 @@ const CadastrarDoacao = () => {
                       )
                     }
                   >
-                    <option value="">SELECIONE O ESTILO</option>
+                    <option value="">Selecione Estilo</option>
                     {characteristics.map((characteristic) => (
                       <option key={characteristic} value={characteristic}>
                         {characteristic}
                       </option>
                     ))}
-                    <option value="outro">OUTRO</option>
+                    <option value="outro">Outro</option>
                   </select>
                 )}
               </div>
@@ -236,14 +240,16 @@ const CadastrarDoacao = () => {
                 <label htmlFor="tamanho"></label>
                 {otherSize ? (
                   <input
+                  className="capitalize" 
                     type="text"
                     id="tamanho"
-                    placeholder="DIGITE O TAMANHO"
+                    placeholder="Digite Tamanho"
                     value={otherSizeValue}
                     onChange={(e) => setOtherSizeValue(e.target.value)}
                   />
                 ) : (
                   <select
+                  className="capitalize" 
                     id="tamanho"
                     value={sizeSelected}
                     onChange={(e) =>
@@ -255,23 +261,23 @@ const CadastrarDoacao = () => {
                       )
                     }
                   >
-                    <option value="">SELECIONE O TAMANHO</option>
+                    <option value="">Selecione Tamanho</option>
                     {sizes.map((size) => (
                       <option value={size.nome} key={size.id}>
                         {size.nome}
                       </option>
                     ))}
-                    <option value="outro">OUTRO</option>
+                    <option value="outro">Outro</option>
                   </select>
                 )}
               </div>
               <div className="select-cadastro">
                 <label htmlFor="genero"></label>
                 <select id="genero">
-                  <option value="">SELECIONE O GÊNERO</option>
-                  <option value="M">MASCULINO</option>
-                  <option value="F">FEMININO</option>
-                  <option value="U">UNISSEX</option>
+                  <option value="">Selecione Gênero</option>
+                  <option value="M">Masculino</option>
+                  <option value="F">Feminino</option>
+                  <option value="U">Unissex</option>
                 </select>
               </div>
               <div className="select-cadastro btn-cadastro">
@@ -280,7 +286,7 @@ const CadastrarDoacao = () => {
                   className="btn-buscar-cadastrar"
                   onClick={handleCadastrar}
                 >
-                  CADASTRAR
+                  Cadastrar
                 </button>
               </div>
             </div>
@@ -300,7 +306,7 @@ const CadastrarDoacao = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
+                        <tr className="capitalize" >
                           <td>{itemSelected.tipo}</td>
                           <td>{itemSelected.caracteristica}</td>
                           <td>{itemSelected.tamanho}</td>
@@ -345,7 +351,7 @@ const CadastrarDoacao = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
+                          <tr className="capitalize" >
                             <td>{itemSelected.tipo}</td>
                             <td>{itemSelected.caracteristica}</td>
                             <td>{itemSelected.tamanho}</td>

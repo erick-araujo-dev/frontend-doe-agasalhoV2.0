@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import SidebarAdmin from "../../components/SidebarAdmin";
-import axiosWithAuth from "../../utils/axiosWithAuth";
-import BoxTitleSection from "../../components/BoxTitleSection";
+import axiosWithAuth from "../../../utils/axiosWithAuth";
+import BoxTitleSection from "../../../components/BoxTitleSection";
 import { useNavigate } from "react-router-dom";
-import { verifyAuthenticationGeral } from "../../utils/verifyAuthentication";
+import { verifyAuthenticationNormal } from "../../../utils/verifyAuthentication";
 import { Eye, EyeClosed } from "phosphor-react"; 
+import SideBarNormal from "../../../components/SidebarNormal";
 
 
-const AlterarSenha = () => {
+const AlterarSenhaNormal = () => {
   const [data, setData] = useState({
     senhaAtual: "",
     novaSenha: "",
@@ -17,7 +17,7 @@ const AlterarSenha = () => {
   const [registrationCompleted, setRegistrationCompleted] = useState(false);
   const navigate = useNavigate();
 
-  verifyAuthenticationGeral(); //verifica se o user esta autenticado
+  verifyAuthenticationNormal(); //verifica se o user esta autenticado
 
   const handleChange = (event) => {
     setData({
@@ -40,6 +40,12 @@ const AlterarSenha = () => {
         requestBody
       );
       setRegistrationCompleted(true);
+      setData({
+        senhaAtual: "",
+        novaSenha: "",
+        ShowCurrentPassword: false,
+        showNewPassword: false,
+      });
     } catch (error) {
       if (error.response) {
         alert(error.response.data);
@@ -71,7 +77,7 @@ const AlterarSenha = () => {
   };
   return (
     <div className="cadastrar-usuario">
-      <SidebarAdmin />
+      <SideBarNormal />
       <main>
         <BoxTitleSection titulo={"Editar dados"} />
         <div>
@@ -164,4 +170,4 @@ const AlterarSenha = () => {
   );
 };
 
-export default AlterarSenha;
+export default AlterarSenhaNormal;
