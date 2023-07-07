@@ -1,5 +1,5 @@
 import logo_sidebar from "../../assets/images/logo-doe-agasalho.png";
-import { House, PlusCircle, MagnifyingGlass, SignOut, Pencil} from "phosphor-react";
+import { House, PlusCircle, Scroll, SignOut, Pencil} from "phosphor-react";
 import { Link, useNavigate } from "react-router-dom";
 import { handleLogout } from "../../utils/helpers";
 
@@ -77,6 +77,17 @@ const SidebarAdmin = () => {
                                 
                             >
                                 Cadastrar Usuário
+                            </Link>
+                        </li>
+                        <li className={location.pathname === "/relatoriodoacoes" ? "active-route" : ""}>
+                            <i>
+                                <Scroll />
+                            </i>
+                            <Link
+                                to="/relatoriodoacoes"
+                                
+                            >
+                                Relatório Doações
                             </Link>
                         </li>
                     </ul>

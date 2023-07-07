@@ -20,7 +20,7 @@ const CadastrarUsuario = () => {
   const [collectionPoints, setCollectionPoints] = useState([]);
   const [registrationCompleted, setRegistrationCompleted] = useState(false);
 
-  verifyAuthenticationAdmin(); //Verifiva se o user esta autenticado
+  verifyAuthenticationAdmin(); //Verifica se o user esta autenticado
 
   useEffect(() => {
     getCollectionPoints(setCollectionPoints);

@@ -5,7 +5,7 @@ import "./style.css";
 import FormEditarPontoColeta from "../../../components/FormEditarPontoColeta";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
-import {verifyAuthenticationAdmin} from "../../../utils/verifyAuthentication";
+import { verifyAuthenticationAdmin } from "../../../utils/verifyAuthentication";
 import { getCollectionPoints } from "../../../utils/api";
 
 const EditarPontoColeta = () => {
@@ -14,7 +14,7 @@ const EditarPontoColeta = () => {
   const [selectedCollectPoint, setSelectedCollectPoint] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  verifyAuthenticationAdmin(); 
+  verifyAuthenticationAdmin();
 
   useEffect(() => {
     getCollectionPoints(setCollectionPoints);
@@ -34,12 +34,14 @@ const EditarPontoColeta = () => {
 
   const confirmDeletion = async () => {
     try {
-      await axiosWithAuth().put(`http://localhost:5059/api/collectpoint/${selectedCollectPoint.id}/deactivate`);
+      await axiosWithAuth().put(
+        `http://localhost:5059/api/collectpoint/${selectedCollectPoint.id}/deactivate`
+      );
       setShowConfirmation(false);
-      await getCollectionPoints();
+      await getCollectionPoints(setCollectionPoints);
     } catch (error) {
       if (error.response) {
-        alert(error.response.data)
+        alert(error.response.data);
       } else if (error.request) {
         console.error("Erro ao fazer a solicitação:", error.request);
       } else {
@@ -52,11 +54,15 @@ const EditarPontoColeta = () => {
     setShowConfirmation(false);
   };
 
+  const handleDeleteFail = () =>{
+    alert("Erro ao excluir: Unidade contém itens em estoque")
+  }
+
   return (
     <div className="editar-usuario">
       <SidebarAdmin />
       <main>
-      <BoxTitleSection titulo={"Editar ponto"}/>
+        <BoxTitleSection titulo={"Editar ponto"} />
 
         <div className="section-box">
           {displayForm ? (
@@ -72,10 +78,16 @@ const EditarPontoColeta = () => {
               {showConfirmation ? (
                 <div className="doacao-confirmada">
                   <h2>CONFIRMAR EXCLUSÃO!</h2>
-                  <p>Você está prestes a excluir o usuário:<br/>
-                    <strong>{selectedCollectPoint.nomePonto}</strong> <br/>
-                    Após realizar a exclusão todo o registro de estoque do usuário excluído será perdido.<br/>
-                    Esta ação é irreversível, certifique-se de que esteja certo disso.</p>
+                  <p>
+                    Você está prestes a excluir o usuário:
+                    <br />
+                    <strong>{selectedCollectPoint.nomePonto}</strong> <br />
+                    Após realizar a exclusão todo o registro de estoque do
+                    usuário excluído será perdido.
+                    <br />
+                    Esta ação é irreversível, certifique-se de que esteja certo
+                    disso.
+                  </p>
                   <div className="botoes-confirmacao">
                     <button onClick={handleCancelDeletion}>Cancelar</button>
                     <button onClick={confirmDeletion}>Confirmar</button>
@@ -100,8 +112,20 @@ const EditarPontoColeta = () => {
                             <td>{pontoColeta.quantidadeUsuarios}</td>
                             <td>{pontoColeta.quantidadeProdutos}</td>
                             <td>
-                              <Pencil className="icon-edit-delete" onClick={() => editCollectPoint(pontoColeta.id)} />
-                              <Trash className="icon-edit-delete" onClick={() => deleteCollectPoint(pontoColeta.id)}/>
+                              <Pencil
+                                className="icon-edit-delete"
+                                onClick={() => editCollectPoint(pontoColeta.id)}
+                              />
+                              <Trash
+                                className={`icon-edit-delete ${pontoColeta.quantidadeProdutos > 0 ? "disabled" : ''}`}
+                                onClick={() => {
+                                  if (pontoColeta.quantidadeProdutos === 0) {
+                                    deleteCollectPoint(pontoColeta.id);
+                                  } else {
+                                    handleDeleteFail();
+                                  }
+                                }}
+                              />
                             </td>
                           </tr>
                         ))}

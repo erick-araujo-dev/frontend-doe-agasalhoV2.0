@@ -35,6 +35,10 @@
     color: #3c3c3c;
 }
 
+.table thead tr{
+    border-bottom: 2px solid #00000075;
+}
+
 .table th,
 .table td {
     padding: 10px;

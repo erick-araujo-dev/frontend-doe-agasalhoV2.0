@@ -4,6 +4,9 @@ import "./style.css";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import { getCharacteristics, getGenders, getSizes, getTypes } from "../../../utils/api";
+import { verifyAuthenticationNormal } from "../../../utils/verifyAuthentication";
+import { Pencil } from "phosphor-react";
+import FormEditarProduto from "../../../components/FormEditarProduto";
 
 const BuscarDoacao = () => {
   const [results, setResults] = useState([]);
@@ -15,7 +18,10 @@ const BuscarDoacao = () => {
   const [sizes, setSizes] = useState([]);
   const [characteristics, setCharacteristics] = useState([]);
   const [genders, setGenders] = useState([]);
+  const [displayForm, setDisplayForm] = useState(false);
   const [amount, setAmount] = useState(1);
+
+  verifyAuthenticationNormal();
 
   useEffect(() => {
     const getValueById = (elementId) => {
@@ -207,6 +213,13 @@ const BuscarDoacao = () => {
           </button>
         </div>
         <div className="box-busca-cadastro">
+          {displayForm ? (
+            <FormEditarProduto
+              produto={selectedProduct}
+              mostrarFormulario={() => setDisplayForm(false)}
+            />
+          ) : (
+            <React.Fragment>
           <div className="box-header-busca-cadastro">
             <p>Resultado:</p>
           </div>
@@ -225,7 +238,8 @@ const BuscarDoacao = () => {
                       <th>Tamanho</th>
                       <th>Gênero</th>
                       <th>Estoque</th>
-                      <th></th>
+                      <th>Editar</th>
+                      <th>Doar</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -245,6 +259,12 @@ const BuscarDoacao = () => {
                             : "Unissex"}
                         </td>
                         <td>{item.estoque}</td>
+                        <td>
+                        <Pencil
+                                className="icon-edit-delete"
+                                onClick={() => editProduct(item.id)}
+                              />
+                        </td>
                         <td>
                           {item.estoque === 0 ? (
                             <button className="btn-doar" disabled>
@@ -329,6 +349,9 @@ const BuscarDoacao = () => {
               </div>
             )}
           </div>
+          </React.Fragment>
+
+          )}
         </div>
       </main>
     </div>

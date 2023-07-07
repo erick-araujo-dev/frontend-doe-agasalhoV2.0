@@ -4,6 +4,7 @@ import "./style.css";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import { getCharacteristics, getSizes, getTypes } from "../../../utils/api";
+import { verifyAuthenticationNormal } from "../../../utils/verifyAuthentication";
 
 const CadastrarDoacao = () => {
   const [donationCompleted, setDonationCompleted] = useState(false);
@@ -23,6 +24,7 @@ const CadastrarDoacao = () => {
   const [characteristics, setCharacteristics] = useState([]);
   const [amount, setAmount] = useState(1);
 
+  verifyAuthenticationNormal();
 
   useEffect(() => {
     const getValueById = (elementId) => {

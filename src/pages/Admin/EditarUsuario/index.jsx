@@ -14,6 +14,10 @@ const EditarUsuario = () => {
 
   verifyAuthenticationAdmin(); //verifica se o user esta autenticado
 
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   const getUsers = async () => {
     try {
       const response = await axiosWithAuth().get(
@@ -24,10 +28,6 @@ const EditarUsuario = () => {
       console.error("Erro ao obter usuários:", error);
     }
   };
-
-  useEffect(() => {
-    getUsers();
-  }, []);
 
   const editUser = (id) => {
     const userFound = users.find((u) => u.id === id);
