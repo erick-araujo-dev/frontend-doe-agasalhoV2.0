@@ -108,7 +108,7 @@ const EditarPontoColeta = () => {
                       </thead>
                       <tbody>
                         {collectionPoints.map((pontoColeta) => (
-                          <tr key={pontoColeta.id} onClick={() => editCollectPoint(pontoColeta.id)} className="row-table-list">
+                          <tr key={pontoColeta.id}>
                             <td>{pontoColeta.nomePonto}</td>
                             <td>{pontoColeta.quantidadeUsuarios}</td>
                             <td>{pontoColeta.quantidadeProdutos}</td>

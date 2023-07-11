@@ -113,7 +113,7 @@ const EditarUsuario = () => {
                       <tbody>
                         {users.map((user) => (
                           <tr
-                          key={user.id} onClick={() => editUser(user.id)} className="row-table-list">
+                          key={user.id}>
                             <td>{user.nome}</td>
                             <td>
                               {user.pontoColeta !== ""

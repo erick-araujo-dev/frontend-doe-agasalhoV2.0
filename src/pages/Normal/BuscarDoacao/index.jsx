@@ -266,8 +266,7 @@ const BuscarDoacao = () => {
                         {results.map((item) => (
                           <tr
                             key={item.$id}
-                            className={item.estoque === 0 ? "out-of-stock row-table-list" : "row-table-list"}
-                            onClick={() => editProduct(item.id)}
+                            className={item.estoque === 0 ? "out-of-stock" : ""}
                           >
                             <td>{item.tipo}</td>
                             <td>{item.caracteristica}</td>
