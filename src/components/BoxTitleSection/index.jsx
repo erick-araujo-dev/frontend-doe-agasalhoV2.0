@@ -23,8 +23,8 @@ const BoxTitleSection = ({ titulo }) => {
         setUsuarioNome(nomeUsuario);
 
         const usuarioTipo = localStorage.getItem("usuarioTipo");
-        setEditarnomeEndpoint(usuarioTipo === "admin" ? "/editarnomeadmin" : "/editarnomenormal");
-        setAlterarsenhaEndpoint(usuarioTipo === "admin" ? "/alterarsenhaadmin" : "/alterarsenhanormal");
+        setEditarnomeEndpoint(usuarioTipo === "admin" ? "/admin/nome/editar" : "/normal/nome/editar");
+        setAlterarsenhaEndpoint(usuarioTipo === "admin" ? "/admin/senha/alterar" : "/normal/senha/alterar");
       } catch (error) {
         console.error("Erro ao buscar usuário:", error);
       }

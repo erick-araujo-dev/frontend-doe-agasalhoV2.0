@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import SidebarAdmin from "../../../components/SidebarAdmin";
-import { Pencil, Trash } from "phosphor-react";
+import { Pencil, Plus, PlusCircle, Trash } from "phosphor-react";
 import "./style.css";
 import FormEditarPontoColeta from "../../../components/FormEditarPontoColeta";
 import BoxTitleSection from "../../../components/BoxTitleSection";
@@ -62,7 +63,7 @@ const EditarPontoColeta = () => {
     <div className="editar-usuario">
       <SidebarAdmin />
       <main>
-        <BoxTitleSection titulo={"Editar ponto"} />
+        <BoxTitleSection titulo={"Pontos de coletas"} />
 
         <div className="section-box">
           {displayForm ? (
@@ -107,7 +108,7 @@ const EditarPontoColeta = () => {
                       </thead>
                       <tbody>
                         {collectionPoints.map((pontoColeta) => (
-                          <tr key={pontoColeta.id}>
+                          <tr key={pontoColeta.id} onClick={() => editCollectPoint(pontoColeta.id)} className="row-table-list">
                             <td>{pontoColeta.nomePonto}</td>
                             <td>{pontoColeta.quantidadeUsuarios}</td>
                             <td>{pontoColeta.quantidadeProdutos}</td>
@@ -131,6 +132,10 @@ const EditarPontoColeta = () => {
                         ))}
                       </tbody>
                     </table>
+                      <Link to="/pontocoleta/cadastrar"
+                          className="link-cadastrar-usuario" >
+                            <Plus/>
+                    </Link>
                   </div>
                 </>
               )}

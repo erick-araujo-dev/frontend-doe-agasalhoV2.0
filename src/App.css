@@ -247,3 +247,10 @@ button, a{
 .capitalize{
   text-transform: capitalize;
 }
+
+/* Tabela de ebibicao usuarios e pontos de coletas */
+
+.row-table-list:hover{
+  background: var(--light-gray);
+  cursor: pointer;
+}

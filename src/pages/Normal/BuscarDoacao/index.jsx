@@ -10,8 +10,9 @@ import {
   getTypes,
 } from "../../../utils/api";
 import { verifyAuthenticationNormal } from "../../../utils/verifyAuthentication";
-import { Pencil } from "phosphor-react";
+import { Pencil, Plus } from "phosphor-react";
 import FormEditarProduto from "../../../components/FormEditarProduto";
+import { Link } from "react-router-dom";
 
 const BuscarDoacao = () => {
   const [results, setResults] = useState([]);
@@ -262,49 +263,11 @@ const BuscarDoacao = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {/* {results.map((item) => {
-                          if (item.estoque > 0) {
-                            return (
-                              <tr
-                                key={item.$id}
-                                className={
-                                  item.estoque === 0 ? "out-of-stock" : ""
-                                }
-                              >
-                                <td>{item.tipo}</td>
-                                <td>{item.caracteristica}</td>
-                                <td>{item.tamanho}</td>
-                                <td>
-                                  {item.genero === "M"
-                                    ? "Masculino"
-                                    : item.genero === "F"
-                                    ? "Feminino"
-                                    : "Unissex"}
-                                </td>
-                                <td>{item.estoque}</td>
-                                <td>
-                                  <button
-                                    className="btn-doar"
-                                    onClick={() => handleDonate(item)}
-                                  >
-                                    Doar
-                                  </button>
-                                </td>
-                                <td>
-                                  <Pencil
-                                    className="icon-edit-delete"
-                                    onClick={() => editProduct(item.id)}
-                                  />
-                                </td>
-                              </tr>
-                            );
-                          }
-                          return null;
-                        })} */}
                         {results.map((item) => (
                           <tr
                             key={item.$id}
-                            className={item.estoque === 0 ? "out-of-stock" : ""}
+                            className={item.estoque === 0 ? "out-of-stock row-table-list" : "row-table-list"}
+                            onClick={() => editProduct(item.id)}
                           >
                             <td>{item.tipo}</td>
                             <td>{item.caracteristica}</td>
@@ -341,6 +304,10 @@ const BuscarDoacao = () => {
                         ))}
                       </tbody>
                     </table>
+                    <Link to="/doacao/cadastrar"
+                          className="link-cadastrar-usuario" >
+                            <Plus/>
+                    </Link>
                   </div>
                 )}
               </div>

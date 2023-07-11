@@ -1,5 +1,5 @@
 import logo_sidebar from "../../assets/images/logo-doe-agasalho.png";
-import { House, PlusCircle, MagnifyingGlass, SignOut } from "phosphor-react";
+import { House, PlusCircle, MagnifyingGlass, SignOut, TShirt } from "phosphor-react";
 import { Link,  useNavigate } from "react-router-dom";
 import { handleLogout } from "../../utils/helpers";
 
@@ -35,26 +35,15 @@ const SideBarNormal = () => {
                                 Página Inicial
                             </Link>
                         </li>
-                        <li className={location.pathname === "/buscardoacao" ? "active-route" : ""}>
+                        <li className={location.pathname === "/doacao" || location.pathname === "/doacao/cadastrar"? "active-route" : ""}>
                             <i>
-                                <MagnifyingGlass />
+                                <TShirt/>
                             </i>
                             <Link
-                                to="/buscardoacao"
+                                to="/doacao"
                                 
                             >
-                                Buscar Doação
-                            </Link>
-                        </li>
-                        <li className={location.pathname === "/cadastrardoacao" ? "active-route" : ""}>
-                            <i>
-                                <PlusCircle />
-                            </i>
-                            <Link
-                                to="/cadastrardoacao"
-                                
-                            >
-                                Cadastrar Doação
+                                Doação
                             </Link>
                         </li>
                     </ul>

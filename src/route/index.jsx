@@ -24,18 +24,18 @@ export default function AppRoute() {
       <Route path="/" element={<LoginPage/>} />
         <Route path="/login" element={<LoginPage />} />
         <Route exact path="/home" element={<HomePageUser />} />
-        <Route exact path="/buscardoacao" element={<BuscarDoacao />} />
-        <Route exact path="/cadastrardoacao" element={< CadastrarDoacao/>} />
+        <Route exact path="/doacao" element={<BuscarDoacao />} />
+        <Route exact path="/doacao/cadastrar" element={< CadastrarDoacao/>} />
         <Route exact path="/homeadmin" element={<HomePageAdmin />} />
-        <Route exact path="/editarpontocoleta" element={<EditarPontoColeta />} />
-        <Route exact path="/cadastrarpontocoleta" element={<CadastrarPontoColeta />} />
-        <Route exact path="/editarusuario" element={<EditarUsuario />} />
-        <Route exact path="/cadastrarusuario" element={<CadastrarUsuario />} />
-        <Route exact path="/relatoriodoacoes" element={<RelatorioDoacoes />} />
-        <Route exact path="/editarnomenormal" element={<EditarUsernameNormal />} />
-        <Route exact path="/editarnomeadmin" element={<EditarUsernameAdmin />} />
-        <Route exact path="/alterarsenhanormal" element={<AlterarSenhaNormal />} />
-        <Route exact path="/alterarsenhaadmin" element={<AlterarSenhaAdmin />} />
+        <Route exact path="/pontocoleta" element={<EditarPontoColeta />} />
+        <Route exact path="/pontocoleta/cadastrar" element={<CadastrarPontoColeta />} />
+        <Route exact path="/usuario" element={<EditarUsuario />} />
+        <Route exact path="/usuario/cadastrar" element={<CadastrarUsuario />} />
+        <Route exact path="/doacoes/relatorio" element={<RelatorioDoacoes />} />
+        <Route exact path="/normal/nome/editar" element={<EditarUsernameNormal />} />
+        <Route exact path="/admin/nome/editar" element={<EditarUsernameAdmin />} />
+        <Route exact path="/normal/senha/alterar" element={<AlterarSenhaNormal />} />
+        <Route exact path="/admin/senha/alterar" element={<AlterarSenhaAdmin />} />
         <Route exact path="/unauthorized" element={<UnauthorizedPage />} />
       </Routes>
     </BrowserRouter>

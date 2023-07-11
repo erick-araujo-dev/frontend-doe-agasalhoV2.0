@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import SidebarAdmin from "../../../components/SidebarAdmin";
-import { Pencil, Trash } from "phosphor-react";
+import { Pencil, Plus, Trash } from "phosphor-react";
 import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import FormEditarUsuario from "../../../components/FormEditarUsuario";
 import { verifyAuthenticationAdmin } from "../../../utils/verifyAuthentication";
+import { Link } from "react-router-dom";
 
 const EditarUsuario = () => {
   const [users, setUsers] = useState([]);
@@ -112,7 +113,7 @@ const EditarUsuario = () => {
                       <tbody>
                         {users.map((user) => (
                           <tr
-                          key={user.id}>
+                          key={user.id} onClick={() => editUser(user.id)} className="row-table-list">
                             <td>{user.nome}</td>
                             <td>
                               {user.pontoColeta !== ""
@@ -141,6 +142,10 @@ const EditarUsuario = () => {
                         ))}
                       </tbody>
                     </table>
+                    <Link to="/usuario/cadastrar"
+                          className="link-cadastrar-usuario" >
+                            <Plus/>
+                    </Link>
                   </div>
                 </>
               )}

@@ -5,6 +5,7 @@ import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import {verifyAuthenticationAdmin} from "../../../utils/verifyAuthentication";
 import { getAddressByZipCode } from "../../../utils/api";
+import { Link } from "react-router-dom";
 
 const CadastrarPontoColeta = () => {
   const [data, setData] = useState({
@@ -83,7 +84,7 @@ const CadastrarPontoColeta = () => {
   };
 
   return (
-    <div className="cadastrar-usuario">
+    <div className="cadastrar-ponto">
       <SidebarAdmin />
       <main>
         <BoxTitleSection titulo={"Cadastrar ponto"} />
@@ -202,9 +203,14 @@ const CadastrarPontoColeta = () => {
                       />
                     </div>
                 </div>
-                <button className="btn-cadastrar-usuario" type="submit">
-                  Cadastrar
-                </button>
+               <div className="box-btn-cadastrar-listar">
+                  <div className="link-listar-usuario">
+                    <Link to="/pontocoleta">Listar Pontos</Link>
+                  </div>
+                 <button className="btn-cadastrar-usuario" type="submit">
+                   Cadastrar
+                 </button>
+               </div>
               </form>
               {registrationCompleted && (
                 <div className="overlay" onClick={() => setRegistrationCompleted(false)}>

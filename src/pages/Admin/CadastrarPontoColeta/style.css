@@ -1,4 +1,4 @@
-.cadastrar-usuario {
+.cadastrar-usuario, .cadastrar-ponto {
     display: flex;
 }
 
@@ -34,7 +34,21 @@
     align-items: center;
 }
 
-.btn-cadastrar-usuario {
+.box-btn-cadastrar-listar{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.box-btn-cadastrar-listar .link-listar-usuario{
+    background-color: #A52A2A;
+}
+
+.box-btn-cadastrar-listar button{
+    background-color: #228B22;
+}
+
+.btn-cadastrar-usuario, .link-listar-usuario {
     align-self: flex-end;
     margin: 0 40px;
     padding: 5px 10px;
@@ -46,9 +60,17 @@
     height: 35px;
     font-weight: 600;
     font-size: 16px;
+    color: var(--white-smoke);
+    text-decoration: none;
 }
 
-.btn-cadastrar-usuario:hover {
+.link-listar-usuario a{
+    text-decoration: none;
+    color: var(--white-smoke);
+    font-weight: 600;
+}
+
+.btn-cadastrar-usuario:hover, .link-listar-usuario:hover {
     opacity: 50%;
 }
 

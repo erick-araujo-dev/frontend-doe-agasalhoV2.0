@@ -2,6 +2,11 @@
     display: flex;
 }
 
+.editar-usuario .section-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .box-admin {
     height: 620px;
@@ -56,12 +61,11 @@
 
 .table-editar-usuario th,
 .table-editar-usuario td {
+    max-width: 10px;
     padding: 10px;
     text-align: center;
     border-bottom: 1px solid #ddd;
-    padding-left: 30px;
     text-transform: uppercase;
-
 }
 
 .table-editar-usuario th {
@@ -76,16 +80,43 @@
     font-size: 25px;
     cursor: pointer;
     margin: 0 5px;
+    color: #a52a2a;
 }
-.editar-usuario .doacao-confirmada{
+
+.icon-edit-delete:first-of-type{
+    color: #3c3c3c;
+}
+
+.editar-usuario .doacao-confirmada {
     height: auto;
 }
+
 .doacao-confirmada strong {
     font-size: 20px;
     text-transform: uppercase;
     font-weight: 600;
 }
 
-.disabled{
-    opacity: 0.3; 
-  }
+.disabled {
+    opacity: 0.3;
+}
+
+.link-cadastrar-usuario{
+    text-decoration: none;
+    color: #fff;
+    background-color: #228b22;
+    font-size: 30px;
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.link-cadastrar-usuario:hover{
+    opacity: 50%;
+}

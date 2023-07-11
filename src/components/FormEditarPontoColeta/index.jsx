@@ -57,7 +57,7 @@ const FormEditarPontoColeta = ({ pontoColeta, mostrarFormulario }) => {
   };
 
   return (
-    <div className="cadastrar-usuario">
+    <div className="cadastrar-ponto">
       <main>
         <div>
           <div className="box-admin">

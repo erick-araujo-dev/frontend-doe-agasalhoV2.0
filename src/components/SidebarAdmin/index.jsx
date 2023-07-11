@@ -1,5 +1,5 @@
 import logo_sidebar from "../../assets/images/logo-doe-agasalho.png";
-import { House, PlusCircle, Scroll, SignOut, Pencil} from "phosphor-react";
+import { House, Scroll, SignOut, Storefront, Users} from "phosphor-react";
 import { Link, useNavigate } from "react-router-dom";
 import { handleLogout } from "../../utils/helpers";
 
@@ -35,56 +35,33 @@ const SidebarAdmin = () => {
                                 Página Inicial
                             </Link>
                         </li>
-                        <li className={location.pathname === "/editarpontocoleta" ? "active-route" : ""}>
+                        <li className={location.pathname === "/pontocoleta" || location.pathname === "/pontocoleta/cadastrar" ? "active-route" : ""}>
                             <i>
-                                <Pencil />
+                                <Storefront />
                             </i>
                             <Link
-                                to="/editarpontocoleta"
-                                
+                                to="/pontocoleta"
                             >
-                                Editar Ponto de Coleta
+                                Pontos de Coletas
                             </Link>
                         </li>
-                        <li className={location.pathname === "/cadastrarpontocoleta" ? "active-route" : ""}>
+                        <li className={location.pathname === "/usuario" || location.pathname === "/usuario/cadastrar" ? "active-route" : ""}>
                             <i>
-                                <PlusCircle />
+                                <Users />
                             </i>
                             <Link
-                                to="/cadastrarpontocoleta"
+                                to="/usuario"
                                 
                             >
-                                Cadastrar Ponto de Coleta
+                                Usuários
                             </Link>
                         </li>
-                        <li className={location.pathname === "/editarusuario" ? "active-route" : ""}>
-                            <i>
-                                <Pencil />
-                            </i>
-                            <Link
-                                to="/editarusuario"
-                                
-                            >
-                                Editar Usuário
-                            </Link>
-                        </li>
-                        <li className={location.pathname === "/cadastrarusuario" ? "active-route" : ""}>
-                            <i>
-                                <PlusCircle />
-                            </i>
-                            <Link
-                                to="/cadastrarusuario"
-                                
-                            >
-                                Cadastrar Usuário
-                            </Link>
-                        </li>
-                        <li className={location.pathname === "/relatoriodoacoes" ? "active-route" : ""}>
+                        <li className={location.pathname === "/doacoes/relatorio" ? "active-route" : ""}>
                             <i>
                                 <Scroll />
                             </i>
                             <Link
-                                to="/relatoriodoacoes"
+                                to="/doacoes/relatorio"
                                 
                             >
                                 Relatório Doações

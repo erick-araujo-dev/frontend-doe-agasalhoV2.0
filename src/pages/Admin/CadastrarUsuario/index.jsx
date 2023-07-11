@@ -5,6 +5,7 @@ import axiosWithAuth from "../../../utils/axiosWithAuth";
 import {verifyAuthenticationAdmin} from "../../../utils/verifyAuthentication";
 import { getCollectionPoints } from "../../../utils/api";
 import { Eye, EyeClosed } from "phosphor-react";
+import { Link } from "react-router-dom";
 
 const CadastrarUsuario = () => {
   const [data, setData] = useState({
@@ -198,9 +199,14 @@ const CadastrarUsuario = () => {
                     )}
                   </div>
                 </div>
-                <button className="btn-cadastrar-usuario" type="submit">
-                  Cadastrar
-                </button>
+                <div className="box-btn-cadastrar-listar">
+                  <div className="link-listar-usuario">
+                    <Link to="/usuario">Listar usuários</Link>
+                  </div>
+                 <button className="btn-cadastrar-usuario" type="submit">
+                   Cadastrar
+                 </button>
+               </div>
               </form>
               {registrationCompleted && (
                 <div className="overlay" onClick={() => setRegistrationCompleted(false)}>

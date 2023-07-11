@@ -5,6 +5,7 @@ import BoxTitleSection from "../../../components/BoxTitleSection";
 import axiosWithAuth from "../../../utils/axiosWithAuth";
 import { getCharacteristics, getSizes, getTypes } from "../../../utils/api";
 import { verifyAuthenticationNormal } from "../../../utils/verifyAuthentication";
+import { Link } from "react-router-dom";
 
 const CadastrarDoacao = () => {
   const [donationCompleted, setDonationCompleted] = useState(false);
@@ -280,15 +281,14 @@ const CadastrarDoacao = () => {
                   <option value="U">Unissex</option>
                 </select>
               </div>
-              <div className="select-cadastro btn-cadastro">
-                <button
-                  type="button"
-                  className="btn-buscar-cadastrar"
-                  onClick={handleCadastrar}
-                >
-                  Cadastrar
-                </button>
-              </div>
+              <div className="box-btn-cadastrar-listar">
+                  <div className="link-listar-usuario">
+                    <Link to="/doacao">Buscar doação</Link>
+                  </div>
+                 <button className="btn-cadastrar-usuario" onClick={handleCadastrar}>
+                   Cadastrar
+                 </button>
+               </div>
             </div>
             <div className="container-doacao-confirmada">
               {donationCompleted && itemSelected && (
